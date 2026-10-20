@@ -12,6 +12,18 @@ export function getBaseUrl(): string {
 	return config.get<string>('baseUrl') || 'https://api.deepseek.com';
 }
 
+/** Whether the official DeepSeek Web Search tool is enabled. */
+export function isWebSearchEnabled(): boolean {
+	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
+	return config.get<boolean>('webTools.search.enabled', true);
+}
+
+/** Whether the official DeepSeek Web Fetch tool is enabled. */
+export function isWebFetchEnabled(): boolean {
+	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
+	return config.get<boolean>('webTools.fetch.enabled', true);
+}
+
 export function getRequestHeaders(): Record<string, string> {
 	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
 	return config.get<Record<string, string>>('requestHeaders', {});

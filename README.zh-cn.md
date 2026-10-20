@@ -61,6 +61,20 @@
   <img src="resources/screenshots/04-agent.png" alt="DeepSeek V4 Pro 运行 Copilot 的 Agent 模式，执行工具调用" width="800">
 </p>
 
+### 官方网页搜索与抓取
+两个内置工具将 Copilot Chat 接入 [DeepSeek 官方 Search / Fetch API](https://api-docs.deepseek.com/zh-cn/guides/search)：
+
+- **`deepseek_web_search`**——返回按相关性排序的网页结果，含标题、URL、日期、站点名、摘要等。行内引用：`#deepseekSearch`。
+- **`deepseek_web_fetch`**——抓取单个网页并返回 Markdown 正文。行内引用：`#deepseekFetch`。
+
+Agent 模式下，模型会在任务需要最新网络信息时自动调用；你也可以通过聊天工具选择器添加，或在提示词中显式写 `#deepseekSearch` / `#deepseekFetch`。两个 API 均按成功请求计费——当前费率请以[官方文档](https://api-docs.deepseek.com/zh-cn/guides/search)与[价格页](https://api-docs.deepseek.com/zh-cn/quick_start/pricing)为准。
+
+说明：
+- 可在设置中搜索 `webTools` 分别关闭搜索或抓取（`webTools.search.enabled` / `webTools.fetch.enabled`）。关闭后工具会从 Copilot Chat 工具列表中隐藏，无法被调用。
+- 自定义 `deepseek-copilot.baseUrl` 时，目标服务需实现 `POST /v1/tools/search` 与 `POST /v1/tools/fetch`。
+- 这两个独立工具适用于本扩展的全部 DeepSeek 模型。Responses API 内置的 `web_search` 工具仅 `deepseek-v4-pro` 支持，且需要将整条对话协议切换到 `/responses`，本扩展未采用该方案。
+- 无论当前选择哪个聊天模型，这两个工具都会使用你配置的 DeepSeek API Key。
+
 ### 安全优先
 API Key 存储在 VS Code 的 `SecretStorage` 中（macOS 钥匙串 / Windows 凭据管理器 / Linux 密钥环）。绝不会出现在 `settings.json` 中，也不会被提交到 Git 历史。
 

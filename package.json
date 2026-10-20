@@ -47,6 +47,90 @@
         "displayName": "DeepSeek"
       }
     ],
+    "languageModelTools": [
+      {
+        "name": "deepseek_web_search",
+        "displayName": "%deepseek-copilot.tool.webSearch.displayName%",
+        "userDescription": "%deepseek-copilot.tool.webSearch.userDescription%",
+        "modelDescription": "%deepseek-copilot.tool.webSearch.modelDescription%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "deepseekSearch",
+        "when": "config.deepseek-copilot.webTools.search.enabled",
+        "icon": "$(search)",
+        "tags": [
+          "web",
+          "search",
+          "deepseek"
+        ],
+        "inputSchema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "description": "Search query. 1-128 Unicode characters, not all whitespace."
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "description": "Number of results to return (1-50). Defaults to 10."
+            },
+            "ori_question": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "description": "The user's original question (1-128 characters) when this query is a rewritten or shortened form of it. Improves result relevance."
+            },
+            "localization": {
+              "type": "string",
+              "description": "Client IP address (e.g. 114.114.114.114) used to return localized results. Omit unless location-aware results are needed."
+            },
+            "need_content": {
+              "type": "boolean",
+              "default": false,
+              "description": "Also return the full text content of each result page. Significantly increases payload size; use only when summaries and snippets are not enough."
+            }
+          }
+        }
+      },
+      {
+        "name": "deepseek_web_fetch",
+        "displayName": "%deepseek-copilot.tool.webFetch.displayName%",
+        "userDescription": "%deepseek-copilot.tool.webFetch.userDescription%",
+        "modelDescription": "%deepseek-copilot.tool.webFetch.modelDescription%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "deepseekFetch",
+        "when": "config.deepseek-copilot.webTools.fetch.enabled",
+        "icon": "$(globe)",
+        "tags": [
+          "web",
+          "fetch",
+          "deepseek"
+        ],
+        "inputSchema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "url"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8192,
+              "description": "The web page URL to fetch. Must be http or https, must include a host, must not contain userinfo, max 8192 characters."
+            }
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "deepseek-copilot.setApiKey",
@@ -130,6 +214,16 @@
           "default": 0,
           "minimum": 0,
           "description": "%deepseek-copilot.config.maxTokens.description%"
+        },
+        "deepseek-copilot.webTools.search.enabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%deepseek-copilot.config.webTools.search.enabled.description%"
+        },
+        "deepseek-copilot.webTools.fetch.enabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%deepseek-copilot.config.webTools.fetch.enabled.description%"
         },
         "deepseek-copilot.requestHeaders": {
           "type": "object",

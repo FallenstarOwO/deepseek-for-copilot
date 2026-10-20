@@ -19,6 +19,8 @@
   "deepseek-copilot.config.baseUrl.description": "DeepSeek API 基础 URL，默认为官方 DeepSeek API 端点。[恢复默认](command:deepseek-copilot.resetBaseUrl)\n\n[设置／更新 API Key](command:deepseek-copilot.setApiKey) · [清除 API Key](command:deepseek-copilot.clearApiKey)",
   "deepseek-copilot.config.requestHeaders.description": "聊天补全请求的自定义请求头。[了解更多](https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/docs/settings/request-headers.zh.md)。",
   "deepseek-copilot.config.maxTokens.description": "每次请求的最大输出 Token 数，设为 0 时使用 API 默认值，可用于控制成本。",
+  "deepseek-copilot.config.webTools.search.enabled.description": "启用 DeepSeek 官方**网页搜索**工具（`#deepseekSearch`）。关闭后该工具会从 Copilot Chat 工具列表中隐藏，无法被调用。每次成功搜索请求都会计费。",
+  "deepseek-copilot.config.webTools.fetch.enabled.description": "启用 DeepSeek 官方**网页抓取**工具（`#deepseekFetch`）。关闭后该工具会从 Copilot Chat 工具列表中隐藏，无法被调用。每次成功抓取请求都会计费。",
   "deepseek-copilot.config.experimental.stabilizeToolList.description": "**实验性功能**：通过预先激活可用的工具来提升 DeepSeek 上下文缓存命中率。\n- 当已启用工具列表跨轮次变化时，这可能提高 DeepSeek 上下文缓存命中率；\n- 请求中将包含更多函数工具定义，input tokens 可能增加，虽然缓存命中的 input tokens 单价更低，但仍会计入用量；\n- 此设置可能会在当前 Copilot 对话历史中加入内部预检工具调用。在同一对话中切换到其他模型时，部分模型提供方可能无法正确重放这段历史；如果切换模型后请求异常，请新建对话后重试。\n\n 通过 [配置工具](command:workbench.action.chat.configureTools) **查看和管理**工具列表：\n\n- 64 个或更少已启用工具时通常无需开启，除非工具列表仍在跨轮次变化；\n- 超过 64 个已启用工具时，仅在工具列表跨轮次变化、DeepSeek 上下文缓存命中率不理想时考虑开启。工具列表越大，input tokens 也可能增加。",
   "deepseek-copilot.config.debugMode.description": "控制 DeepSeek Copilot 写入的诊断信息量。无论此设置如何，token 用量始终上报给 Copilot。\n\n- **基本** — 仅上报 token 用量，不输出诊断日志或请求 dump。\n- **元数据** — 隐私安全的诊断元数据（请求哈希、前缀重合度、工具定义变更）。不含提示词原文，可安全附在公开 issue 中反馈问题。使用 [`DeepSeek: 显示日志`](command:deepseek-copilot.showLogs) 查看。\n- **详细** — 将完整请求体写入磁盘，供本地调试。**警告：包含敏感的提示词内容。** 使用 [`DeepSeek: 打开请求 Dump 目录`](command:deepseek-copilot.openRequestDumpsFolder) 浏览。",
   "deepseek-copilot.config.debugMode.minimal.label": "基本",
@@ -33,5 +35,11 @@
   "deepseek-copilot.config.modelIdOverrides.deepseek-v4-pro.description": "DeepSeek V4 Pro 的 API 模型 ID。",
   "deepseek-copilot.config.modelIdOverrides.deepseek-v4-flash-vision-exp.description": "DeepSeek V4 Flash Vision Exp 的 API 模型 ID。",
   "deepseek-copilot.config.visionModel.description": "DeepSeek V4 Flash 和 Pro 使用的视觉代理。未设置时，自动模式会在可用时选择 DeepSeek V4 Flash Vision Exp。可通过[配置视觉代理](command:deepseek-copilot.setVisionModel)改用其他 VS Code 模型或 API 端点。",
-  "deepseek-copilot.config.visionPrompt.description": "V4 Flash 和 Pro 入口的视觉代理用于描述图片附件的提示词，不影响 V4.1 Flash 或 Flash Vision Exp 的原生图片请求。\n\n[配置视觉代理](command:deepseek-copilot.setVisionModel)"
+  "deepseek-copilot.config.visionPrompt.description": "V4 Flash 和 Pro 入口的视觉代理用于描述图片附件的提示词，不影响 V4.1 Flash 或 Flash Vision Exp 的原生图片请求。\n\n[配置视觉代理](command:deepseek-copilot.setVisionModel)",
+  "deepseek-copilot.tool.webSearch.displayName": "DeepSeek：网页搜索",
+  "deepseek-copilot.tool.webSearch.userDescription": "使用 DeepSeek 官方 Search API 搜索网页。按成功请求计费。",
+  "deepseek-copilot.tool.webSearch.modelDescription": "使用 DeepSeek 官方 Search API 搜索网页。返回按相关性排序的结果，包含标题、URL、发布日期、站点名、权威度、重排分数、摘要与片段；当 need_content 为 true 时还会包含页面全文。当任务需要训练数据或工作区之外的新鲜信息时使用：新闻、最新版本动态、现行文档或不确定的事实。不要用它回答可以从工作区、已打开文件或稳定常识解决的问题；用户已给出网址时也不要用它（应改用抓取工具）。每次成功请求都会计费，除非用户要求更多，count 保持较小（5-10）。",
+  "deepseek-copilot.tool.webFetch.displayName": "DeepSeek：网页抓取",
+  "deepseek-copilot.tool.webFetch.userDescription": "使用 DeepSeek 官方 Fetch API 抓取网页并转为 Markdown。按成功请求计费。",
+  "deepseek-copilot.tool.webFetch.modelDescription": "使用 DeepSeek 官方 Fetch API 抓取单个网页，返回页面标题与转换为 Markdown 的正文。当用户要求读取/打开特定 URL，或搜索结果的摘要与片段不足以满足需要、需要页面全文时使用。仅支持包含 host 的 http/https URL，不允许 userinfo。不要用它搜索网页（应改用搜索工具），也不要抓取已有内容的页面。每次成功请求都会计费。"
 }

@@ -61,6 +61,20 @@ Because this plugs into Copilot's native provider API, you get the full stack fo
   <img src="resources/screenshots/04-agent.png" alt="DeepSeek V4 Pro running Copilot's agent mode with tool calls" width="800">
 </p>
 
+### Web Search and Fetch
+Two built-in tools plug Copilot Chat into the official [DeepSeek Search and Fetch APIs](https://api-docs.deepseek.com/guides/search):
+
+- **`deepseek_web_search`** — ranked web results with title, URL, date, site name, summary, and more. Inline reference: `#deepseekSearch`.
+- **`deepseek_web_fetch`** — fetches one page and returns clean Markdown. Inline reference: `#deepseekFetch`.
+
+In agent mode the model calls them automatically when a task needs fresh web information. You can also add them via the chat tools picker, or mention `#deepseekSearch` / `#deepseekFetch` explicitly. Both APIs bill per successful request — see the [official docs](https://api-docs.deepseek.com/guides/search) and the [pricing page](https://api-docs.deepseek.com/quick_start/pricing) for current rates.
+
+Notes:
+- Each tool can be disabled independently in Settings (search for `webTools`; keys: `webTools.search.enabled` / `webTools.fetch.enabled`). Disabled tools are hidden from Copilot Chat and cannot be called.
+- When `deepseek-copilot.baseUrl` is customized, the target service must implement `POST /v1/tools/search` and `POST /v1/tools/fetch`.
+- These standalone tools work with every DeepSeek model in this extension. The Responses API's built-in `web_search` tool is only available on `deepseek-v4-pro` and requires switching the whole chat protocol to `/responses`, which this extension does not do.
+- The tools always use your configured DeepSeek API key, even when another chat model is selected.
+
 ### Secure by Default
 API key lives in VS Code's `SecretStorage` (OS keychain on macOS / Windows / Linux). Never in `settings.json`, never in your Git history.
 

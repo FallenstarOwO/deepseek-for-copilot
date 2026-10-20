@@ -232,8 +232,55 @@ const zh: Translations = {
 	// Extension
 	'extension.activateFailed': 'DeepSeek 激活失败，请运行 "DeepSeek: 显示日志" 查看详情。',
 	'extension.welcomeFailed': '欢迎引导加载异常',
+	'extension.toolsRegisterFailed': '网页搜索/抓取工具注册失败，不影响主功能。',
 	'extension.openRequestDumpsFolderFailed':
 		'打开请求 dump 目录失败，请运行 "DeepSeek: 显示日志" 查看详情。',
+
+	// Web Tools
+	'tools.invocation.search': '正在搜索网页',
+	'tools.invocation.fetch': '正在抓取网页',
+	'tools.confirm.search.title': 'DeepSeek 网页搜索',
+	'tools.confirm.search.message': '使用 DeepSeek Search API 搜索“{0}”？（按成功请求计费）',
+	'tools.confirm.fetch.title': 'DeepSeek 网页抓取',
+	'tools.confirm.fetch.message': '使用 DeepSeek Fetch API 抓取 {0}？（按成功请求计费）',
+	'tools.error.apiKeyMissing':
+		'尚未配置 DeepSeek API Key。请运行 "DeepSeek: 设置 API Key" 后重试。',
+	'tools.error.searchDisabled':
+		'DeepSeek 网页搜索已关闭。请在设置中启用 "deepseek-copilot.webTools.search.enabled" 后重试。',
+	'tools.error.fetchDisabled':
+		'DeepSeek 网页抓取已关闭。请在设置中启用 "deepseek-copilot.webTools.fetch.enabled" 后重试。',
+	'tools.error.timeout': '请求超时（{0} 秒）。请稍后重试。',
+	'tools.error.cancelled': '请求已取消。',
+	'tools.error.invalidResponse':
+		'服务返回了无法解析的响应。若使用了自定义 baseUrl，请确认目标服务支持 /v1/tools/search 与 /v1/tools/fetch。',
+	'tools.error.unknown': 'DeepSeek 工具请求失败：{0}',
+	'tools.error.http.400':
+		'[HTTP {0}] 请求参数无效（例如 query 长度或取值范围不符合要求）。请调整参数后重试。',
+	'tools.error.http.401':
+		'[HTTP {0}] API Key 无效或未认证。请运行 "DeepSeek: 设置 API Key" 重新配置。',
+	'tools.error.http.402': '[HTTP {0}] 账户余额不足。请前往 DeepSeek 开放平台充值后重试。',
+	'tools.error.http.403': '[HTTP {0}] 无权访问该资源。请检查 API Key 权限。',
+	'tools.error.http.404':
+		'[HTTP {0}] 端点不存在。若使用自定义 baseUrl，目标服务需支持 /v1/tools/search 与 /v1/tools/fetch。',
+	'tools.error.http.fetch.403':
+		'[HTTP {0}] 抓取请求被安全策略拒绝。目标站点可能禁止访问或内容类型不受支持。',
+	'tools.error.http.fetch.404':
+		'[HTTP {0}] 无法获取网页内容。URL 可能不可用、被站点策略拦截、返回错误，或页面没有可提取的 Markdown 正文。',
+	'tools.error.http.408': '[HTTP {0}] 请求超时。请稍后重试。',
+	'tools.error.http.413': '[HTTP {0}] 请求体过大。请缩短参数后重试。',
+	'tools.error.http.429':
+		'[HTTP {0}] 请求过于频繁（Search 限 100 QPS，Fetch 限 25 QPS）。请降低频率后重试。',
+	'tools.error.http.5xx': '[HTTP {0}] 服务端错误。请稍后重试。',
+	'tools.error.http.generic': '[HTTP {0}] 服务返回错误。',
+	'tools.error.network.dns': '[{0}] DNS 解析失败。请检查网络连接与自定义 baseUrl。',
+	'tools.error.network.unreachable':
+		'[{0}] 无法连接目标服务。请检查自定义 baseUrl、网络或代理设置。',
+	'tools.error.network.interrupted': '[{0}] 连接被中断。请检查网络后重试。',
+	'tools.error.network.timeout': '[{0}] 网络连接超时。请稍后重试。',
+	'tools.error.network.tls': '[{0}] TLS/证书校验失败。请检查代理或证书配置。',
+	'tools.error.network.generic': '[{0}] 网络请求失败。请检查网络连接与自定义 baseUrl。',
+	'tools.output.search.empty': '未找到相关结果。可尝试更换或细化搜索词后重试。',
+	'tools.output.truncated': '（输出已截断：保留前 {0} / 共 {1} 字符）',
 };
 
 const en: Translations = {
@@ -486,8 +533,64 @@ const en: Translations = {
 	// Extension
 	'extension.activateFailed': 'DeepSeek failed to activate. Run "DeepSeek: Show Logs" for details.',
 	'extension.welcomeFailed': 'Failed to show DeepSeek welcome prompt',
+	'extension.toolsRegisterFailed': 'Failed to register web tools; core features are unaffected.',
 	'extension.openRequestDumpsFolderFailed':
 		'Failed to open request dumps folder. Run "DeepSeek: Show Logs" for details.',
+
+	// Web Tools
+	'tools.invocation.search': 'Searching the web',
+	'tools.invocation.fetch': 'Fetching web page',
+	'tools.confirm.search.title': 'DeepSeek web search',
+	'tools.confirm.search.message':
+		'Search the web for "{0}" with the DeepSeek Search API? (billed per successful request)',
+	'tools.confirm.fetch.title': 'DeepSeek web fetch',
+	'tools.confirm.fetch.message':
+		'Fetch page content from {0} with the DeepSeek Fetch API? (billed per successful request)',
+	'tools.error.apiKeyMissing':
+		'DeepSeek API key is not configured. Run "DeepSeek: Set API Key" and try again.',
+	'tools.error.searchDisabled':
+		'DeepSeek Web Search is disabled. Enable "deepseek-copilot.webTools.search.enabled" in Settings and try again.',
+	'tools.error.fetchDisabled':
+		'DeepSeek Web Fetch is disabled. Enable "deepseek-copilot.webTools.fetch.enabled" in Settings and try again.',
+	'tools.error.timeout': 'The request timed out ({0}s). Try again later.',
+	'tools.error.cancelled': 'The request was cancelled.',
+	'tools.error.invalidResponse':
+		'The service returned a response that could not be parsed. With a custom baseUrl, make sure the target service supports /v1/tools/search and /v1/tools/fetch.',
+	'tools.error.unknown': 'DeepSeek tool request failed: {0}',
+	'tools.error.http.400':
+		'[HTTP {0}] Invalid request parameters (for example, query length or value out of range). Adjust the parameters and try again.',
+	'tools.error.http.401':
+		'[HTTP {0}] The API key is invalid or missing. Run "DeepSeek: Set API Key" to configure it again.',
+	'tools.error.http.402':
+		'[HTTP {0}] Your account is out of balance. Top up on the DeepSeek platform and try again.',
+	'tools.error.http.403':
+		'[HTTP {0}] Access to the resource is forbidden. Check the API key permissions.',
+	'tools.error.http.404':
+		'[HTTP {0}] Endpoint not found. With a custom baseUrl, the target service must support /v1/tools/search and /v1/tools/fetch.',
+	'tools.error.http.fetch.403':
+		'[HTTP {0}] The fetch request was rejected by a security policy. The target site may block access or use an unsupported content type.',
+	'tools.error.http.fetch.404':
+		'[HTTP {0}] Could not fetch usable content. The URL may be unavailable, blocked by the site, return an error, or have no extractable Markdown body.',
+	'tools.error.http.408': '[HTTP {0}] The request timed out. Try again later.',
+	'tools.error.http.413':
+		'[HTTP {0}] The request body is too large. Shorten the parameters and try again.',
+	'tools.error.http.429':
+		'[HTTP {0}] Too many requests (Search is limited to 100 QPS, Fetch to 25 QPS). Slow down and try again.',
+	'tools.error.http.5xx': '[HTTP {0}] Server error. Try again later.',
+	'tools.error.http.generic': '[HTTP {0}] The service returned an error.',
+	'tools.error.network.dns':
+		'[{0}] DNS lookup failed. Check your network connection and custom baseUrl.',
+	'tools.error.network.unreachable':
+		'[{0}] The target is unreachable. Check your custom baseUrl, network, or proxy settings.',
+	'tools.error.network.interrupted':
+		'[{0}] The connection was interrupted. Check your network and try again.',
+	'tools.error.network.timeout': '[{0}] The network connection timed out. Try again later.',
+	'tools.error.network.tls':
+		'[{0}] TLS/certificate verification failed. Check your proxy or certificate configuration.',
+	'tools.error.network.generic':
+		'[{0}] Network request failed. Check your network connection and custom baseUrl.',
+	'tools.output.search.empty': 'No results found. Try a different or more specific query.',
+	'tools.output.truncated': '(Output truncated: kept the first {0} of {1} characters)',
 };
 
 /**

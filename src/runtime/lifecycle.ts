@@ -5,12 +5,19 @@ import { registerActionUrls } from './actions';
 import { registerCommands } from './commands';
 import { initializeDiagnostics } from './diagnostics';
 import { registerProvider } from './provider';
+import { registerLanguageModelTools } from './tools';
 import { showWelcomeIfNeeded } from './welcome';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	await initializeDiagnostics(context);
 	registerCommands(context);
 	registerActionUrls(context);
+
+	try {
+		registerLanguageModelTools(context);
+	} catch (error) {
+		logger.warn(t('extension.toolsRegisterFailed'), error);
+	}
 
 	try {
 		const provider = registerProvider(context);
