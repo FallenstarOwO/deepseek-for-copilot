@@ -20,7 +20,7 @@
 > **非官方社区分支。** 由 `fallenstarowo` 从 [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot) 发布，与原作者 [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot) 无隶属或背书关系；MIT 许可证与原始版权声明均予保留。两个扩展注册同一个 `deepseek` 模型 vendor，**安装本扩展前请先卸载官方版本**。
 
 <p align="center">
-  <img src="resources/screenshots/01-picker.png" alt="DeepSeek V4.1 Flash 和 Pro 出现在 Copilot Chat 模型选择器中，并展示思考深度菜单" width="800">
+  <img src="resources/screenshots/01-picker.png" alt="Copilot Chat 模型选择器中的 DeepSeek 分组，列出 DeepSeek V4 Pro 与 DeepSeek V4.1 Flash，并显示「最大值 · Max 1M」思考深度" width="798">
 </p>
 
 喜欢 DeepSeek 的性价比，但不想放弃 GitHub Copilot 的 Agent 模式、工具调用和成熟的交互体验？本扩展将 **DeepSeek V4.1 Flash 等模型**直接接入 Copilot Chat 模型选择器，支持**原生视觉或视觉代理**、**思考模式**，并使用你自己的 API Key。
@@ -139,6 +139,30 @@ API Key 存储在 VS Code 的 `SecretStorage` 中（macOS 钥匙串 / Windows �
   }
 }
 ```
+
+## 已知问题
+
+### Agents 窗口的 Cloud 会话中看不到 DeepSeek 模型
+
+Agents 窗口的输入框可以切换会话类型。**Cloud** 会话在 GitHub 托管的沙箱里运行，模型清单由服务端解析，因此只有一个 `Auto` —— 第三方 BYOK 模型无法在其中使用，任何扩展设置都改变不了这一点。
+
+请改用本地的 **Copilot** 会话类型：那里的模型选择器会把 `deepseek/deepseek-flash` 和 `deepseek/deepseek-v4-pro` 与其他 BYOK 提供方并列列出。如果本地会话里也没有，请开启 `chat.agentHost.byokModels.enabled` 并**完全重启 VS Code**，因为 agent host 按窗口缓存提供方列表。
+
+```json
+{
+  "chat.agentHost.byokModels.enabled": true
+}
+```
+
+扩展另外声明了 `"capabilities": { "agentsWindow": { "supported": true } }`，以便自身能在 Agents 窗口内运行。在 VS Code 1.143 / 1.144 上，该声明只有在开启 `extensions.experimental.enableAgentsWindowCapability` 后才会被采用；若希望在该窗口内使用扩展自己的命令，可设置 `extensions.supportAgentsWindow`。这两项都不影响模型是否出现——模型可用性来自 BYOK 桥接，与扩展是否在该窗口加载无关。
+
+关于激活顺序：扩展在激活阶段同步注册 provider，并在 Copilot Chat 激活完成后刷新模型列表，因此 Copilot 启动较慢时模型选择器不会长时间为空。
+
+### 关闭所有 VS Code 窗口后，Agents 窗口中的模型会消失
+
+agent host 本身并不运行本扩展的 provider。开启 `chat.agentHost.byokModels.enabled` 后，它是从**正在运行的 VS Code 扩展宿主**接入 BYOK 模型的。关掉最后一个 VS Code 窗口，扩展宿主进程随之退出，DeepSeek 模型就会从 Agents 窗口的选择器中消失，进行中的请求也会失败。
+
+规避方式：在 Agents 窗口工作期间至少保留一个 VS Code 窗口不关闭。窗口最小化即可——需要的是进程还在，而不是窗口可见。也可以改在同一个窗口的 Chat 视图里执行同样的智能体任务。这是 VS Code 侧的限制，扩展无法自行绕过。
 
 ## 方案对比
 
