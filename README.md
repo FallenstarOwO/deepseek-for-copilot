@@ -1,21 +1,23 @@
-<h1 align="center">DeepSeek V4 for Copilot Chat</h1>
+<h1 align="center">DeepSeek for Copilot</h1>
 
 <p align="center">
   <!-- marketplace-readme:remove-start -->
-  <a href="https://marketplace.visualstudio.com/items?itemName=Vizards.deepseek-v4-for-copilot"><img src="https://img.shields.io/badge/VS%20Code%20Marketplace-Install-007ACC?logo=visualstudiocode&logoColor=white&style=for-the-badge" alt="Install from VS Code Marketplace"></a>
-  <a href="https://open-vsx.org/extension/Vizards/deepseek-v4-for-copilot"><img src="https://img.shields.io/badge/Open%20VSX-Install-6A4FB6?style=for-the-badge" alt="Install from Open VSX"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot"><img src="https://img.shields.io/badge/VS%20Code%20Marketplace-Install-007ACC?logo=visualstudiocode&logoColor=white&style=for-the-badge" alt="Install from VS Code Marketplace"></a>
+  <a href="https://open-vsx.org/extension/fallenstarowo/deepseek-for-copilot"><img src="https://img.shields.io/badge/Open%20VSX-Install-6A4FB6?style=for-the-badge" alt="Install from Open VSX"></a>
   <br/>
   <!-- marketplace-readme:remove-end -->
-  <img src="https://img.shields.io/github/v/release/Vizards/deepseek-v4-for-copilot?style=for-the-badge&label=Version" alt="Version" />
-  <img src="https://vsmarketplacebadges.dev/installs-short/Vizards.deepseek-v4-for-copilot.svg?style=for-the-badge" alt="Installs" />
+  <img src="https://img.shields.io/github/v/release/FallenstarOwO/deepseek-for-copilot?style=for-the-badge&label=Version" alt="Version" />
+  <img src="https://vsmarketplacebadges.dev/installs-short/fallenstarowo.deepseek-for-copilot.svg?style=for-the-badge" alt="Installs" />
 </p>
 
 <p align="center">
   English |
-  <a href="https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/README.zh-cn.md">简体中文</a>
+  <a href="https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.zh-cn.md">简体中文</a>
 </p>
 
 **Pick DeepSeek V4 from the Copilot Chat model picker — and keep everything else Copilot already gives you.**
+
+> **Unofficial community fork.** Published by `fallenstarowo` from [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot). Not affiliated with or endorsed by the original author of [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot); the MIT license and original copyright notices are retained. Both extensions register the same `deepseek` model vendor, so **uninstall the official extension before installing this one**.
 
 <p align="center">
   <img src="resources/screenshots/01-picker.png" alt="DeepSeek V4 Flash, Flash Vision Exp, and Pro in the Copilot Chat model picker, alongside the Thinking Effort menu" width="800">
@@ -85,7 +87,7 @@ Pure VS Code API + Node.js built-ins. No Python, no Docker, no local proxy serve
 
 ### Prerequisites
 
-- VS Code 1.116 or later. This extension relies on non-public Copilot Chat APIs that may break on newer VS Code versions — [report an issue](https://github.com/Vizards/deepseek-v4-for-copilot/issues) if you hit one.
+- VS Code 1.116 or later. This extension relies on non-public Copilot Chat APIs that may break on newer VS Code versions — [report an issue](https://github.com/FallenstarOwO/deepseek-for-copilot/issues) if you hit one.
 - GitHub Copilot subscription (Free / Pro / Enterprise — the free tier works)
 - DeepSeek API key from [platform.deepseek.com](https://platform.deepseek.com), or a compatible provider token when using a custom `deepseek-copilot.baseUrl`
 
@@ -93,8 +95,8 @@ Pure VS Code API + Node.js built-ins. No Python, no Docker, no local proxy serve
 
 Install from the registry used by your editor:
 
-1. **Microsoft VS Code** — install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=Vizards.deepseek-v4-for-copilot).
-2. **Editors that use Open VSX** — install from [Open VSX](https://open-vsx.org/extension/Vizards/deepseek-v4-for-copilot).
+1. **Microsoft VS Code** — install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot).
+2. **Editors that use Open VSX** — install from [Open VSX](https://open-vsx.org/extension/fallenstarowo/deepseek-for-copilot).
 
 ### Usage
 
@@ -154,6 +156,14 @@ Example `settings.json` override for compatible API proxies:
 | No extra process to run | ✅ | ❌ | ✅ |
 | One-click install | ✅ | ❌ | ✅ |
 | API key in OS keychain | ✅ | ❌ | ⚠️ varies |
+
+## Acknowledgements
+
+This project is a community fork of **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** by **Vizards**. The provider implementation, the vision pipeline, the i18n scaffolding, and most of the architecture come from that project — this fork would not exist without it. The upstream work is MIT licensed, and its copyright notice is preserved in [LICENSE](LICENSE) and shipped with every build.
+
+Thanks also to the upstream contributors and everyone who reported issues or sent pull requests there; the features in this fork build directly on that groundwork.
+
+This fork adds DeepSeek web search and web fetch tools, and publishes independently so those changes stay available while they are under review upstream.
 
 ## License
 

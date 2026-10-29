@@ -7,7 +7,7 @@
   "deepseek-copilot.command.openSettings": "DeepSeek: Open Settings",
   "deepseek-copilot.command.showLogs": "DeepSeek: Show Logs",
   "deepseek-copilot.command.openRequestDumpsFolder": "DeepSeek: Open Request Dumps Folder",
-  "deepseek-copilot.walkthrough.title": "DeepSeek V4 for Copilot Chat",
+  "deepseek-copilot.walkthrough.title": "DeepSeek for Copilot",
   "deepseek-copilot.walkthrough.description": "Set up DeepSeek V4 models in Copilot Chat.",
   "deepseek-copilot.walkthrough.setApiKey.title": "Set your DeepSeek API key",
   "deepseek-copilot.walkthrough.setApiKey.description": "[Get an API key](command:deepseek-copilot.getApiKey) from deepseek.com.\n[Set API Key](command:deepseek-copilot.setApiKey)",

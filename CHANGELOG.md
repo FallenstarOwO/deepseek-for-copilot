@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.0](https://github.com/FallenstarOwO/deepseek-for-copilot/releases/tag/v1.0.0) (2026-10-29)
+
+First release of this community fork, based on upstream 0.9.4.
+
+### Features
+
+* **tools:** add DeepSeek web search and web fetch tools
+* **i18n:** add localized strings for the new tools
+
+### Miscellaneous
+
+* **fork:** publish independently as `fallenstarowo.deepseek-for-copilot` with its own release pipeline
+
 ## [0.9.4](https://github.com/Vizards/deepseek-v4-for-copilot/compare/v0.9.3...v0.9.4) (2026-10-07)
 
 

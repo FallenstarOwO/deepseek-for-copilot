@@ -61,7 +61,9 @@ jobs:
       cancel-in-progress: false
     permissions:
       contents: write
-      id-token: write
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4.4.0
         with:
@@ -89,21 +91,20 @@ jobs:
           fi
           echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
 
-      - name: Sign in with Entra workload identity federation
-        if: vars.PUBLISH_VSCODE_MARKETPLACE != 'false'
-        uses: azure/login@v3.1.0
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          allow-no-subscriptions: true
+      - name: Verify publish credentials
+        run: |
+          if [ -z "${VSCE_PAT}" ] && [ -z "${OVSX_PAT}" ]; then
+            echo "Neither VSCE_PAT nor OVSX_PAT is configured; refusing to publish." >&2
+            exit 1
+          fi
 
       - name: Publish to VS Code Marketplace
-        if: vars.PUBLISH_VSCODE_MARKETPLACE != 'false'
-        run: npm exec -- vsce publish --azure-credential --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
+        if: vars.PUBLISH_VSCODE_MARKETPLACE != 'false' && env.VSCE_PAT != ''
+        run: npm exec -- vsce publish --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
 
       - name: Publish to Open VSX
-        if: vars.PUBLISH_OPEN_VSX != 'false'
-        run: npm exec -- ovsx publish --trusted-publishing --skip-duplicate "${{ steps.vsix.outputs.path }}"
+        if: vars.PUBLISH_OPEN_VSX != 'false' && env.OVSX_PAT != ''
+        run: npm exec -- ovsx publish --skip-duplicate "${{ steps.vsix.outputs.path }}"
 
       - name: Attach VSIX to GitHub Release
         uses: softprops/action-gh-release@v2.6.2
@@ -125,7 +126,9 @@ jobs:
       cancel-in-progress: false
     permissions:
       contents: write
-      id-token: write
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4.4.0
         with:
@@ -171,21 +174,20 @@ jobs:
           fi
           echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
 
-      - name: Sign in with Entra workload identity federation
-        if: inputs.publish_vscode_marketplace == true
-        uses: azure/login@v3.1.0
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          allow-no-subscriptions: true
+      - name: Verify publish credentials
+        run: |
+          if [ -z "${VSCE_PAT}" ] && [ -z "${OVSX_PAT}" ]; then
+            echo "Neither VSCE_PAT nor OVSX_PAT is configured; refusing to publish." >&2
+            exit 1
+          fi
 
       - name: Publish to VS Code Marketplace
-        if: inputs.publish_vscode_marketplace == true
-        run: npm exec --yes --package=@vscode/vsce@4.0.0 -- vsce publish --azure-credential --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
+        if: inputs.publish_vscode_marketplace == true && env.VSCE_PAT != ''
+        run: npm exec --yes --package=@vscode/vsce@4.0.0 -- vsce publish --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
 
       - name: Publish to Open VSX
-        if: inputs.publish_open_vsx == true
-        run: npm exec --yes --package=ovsx@1.2.0 -- ovsx publish --trusted-publishing --skip-duplicate "${{ steps.vsix.outputs.path }}"
+        if: inputs.publish_open_vsx == true && env.OVSX_PAT != ''
+        run: npm exec --yes --package=ovsx@1.2.0 -- ovsx publish --skip-duplicate "${{ steps.vsix.outputs.path }}"
 
       - name: Attach VSIX to GitHub Release
         if: inputs.attach_github_release == true
