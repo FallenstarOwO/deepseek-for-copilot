@@ -9,6 +9,11 @@ First release of this community fork, based on upstream 0.9.4.
 * **tools:** add DeepSeek web search and web fetch tools
 * **i18n:** add localized strings for the new tools
 
+### Model changes
+
+* drop the retired `deepseek-v4-flash` and `deepseek-v4-flash-vision-exp` entries
+* vision proxy auto mode now defaults to `deepseek-flash` (V4.1 Flash); V4 Pro image support is unchanged
+
 ### Miscellaneous
 
 * **fork:** publish independently as `fallenstarowo.deepseek-for-copilot` with its own release pipeline

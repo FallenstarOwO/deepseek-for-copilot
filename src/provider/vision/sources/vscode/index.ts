@@ -12,7 +12,6 @@ import { getVSCodeVisionTargetChatSessionType } from './model';
 const EXCLUDED_VISION_MODEL_IDS = new Set([
 	'copilot-utility',
 	'copilot-utility-small',
-	'deepseek-v4-flash',
 	'deepseek-v4-pro',
 ]);
 const EXCLUDED_VISION_MODEL_VENDORS = new Set(['claude-code', 'copilotcli']);
@@ -109,10 +108,10 @@ export class VSCodeLanguageModelVisionDescriber implements VisionDescriber {
 		] as (vscode.LanguageModelDataPart | vscode.LanguageModelTextPart)[]);
 
 		// Keep the user-facing default reasoning effort for the main chat model, but
-		// disable thinking for the internal Vision Exp proxy pass. This is a serial
+		// disable thinking for the internal vision proxy pass. This is a serial
 		// preprocessing step, so the extra latency and cost should not be paid unless
 		// the user explicitly asks for it in the primary model configuration.
-		const requestOptions = isDeepSeekVisionExpModel(this.model)
+		const requestOptions = isDefaultVisionModel(this.model)
 			? { modelOptions: { reasoningEffort: 'none' as const } }
 			: {};
 		const response = await this.model.sendRequest([visionMsg], requestOptions, request.token);
@@ -185,8 +184,8 @@ export function pickPreferredVSCodeVisionModelKey(
 		// quietly replacing the user's current selection with the automatic default.
 		return undefined;
 	}
-	// In auto mode, require an exact Vision Exp match and do not fall back to
-	// arbitrary options to keep the default path deterministic.
+	// In auto mode, require an exact match with the default vision model and do
+	// not fall back to arbitrary options to keep the default path deterministic.
 	const preferred = options.find(
 		(model) => model.vendor === 'deepseek' && model.id === DEFAULT_VISION_MODEL_ID,
 	);
@@ -221,12 +220,12 @@ function pickPreferredVSCodeVisionModel(
 }
 
 function isVSCodeVisionModel(model: vscode.LanguageModelChat): boolean {
-	// Keep the legacy Vision Exp entry as the only DeepSeek proxy candidate.
-	// Adding V4.1 Flash must not change the existing proxy choices or defaults.
-	const isDeepSeekVisionExp = isDeepSeekVisionExpModel(model);
+	// Keep the default vision model (DeepSeek V4.1 Flash) as the only DeepSeek
+	// proxy candidate.
+	const isDefaultVisionModelCandidate = isDefaultVisionModel(model);
 	const isVendorAllowed =
 		model.vendor === 'deepseek'
-			? isDeepSeekVisionExp
+			? isDefaultVisionModelCandidate
 			: !EXCLUDED_VISION_MODEL_VENDORS.has(model.vendor);
 	return (
 		isVendorAllowed &&
@@ -238,7 +237,7 @@ function isVSCodeVisionModel(model: vscode.LanguageModelChat): boolean {
 	);
 }
 
-function isDeepSeekVisionExpModel(model: Pick<vscode.LanguageModelChat, 'vendor' | 'id'>): boolean {
+function isDefaultVisionModel(model: Pick<vscode.LanguageModelChat, 'vendor' | 'id'>): boolean {
 	return model.vendor === 'deepseek' && model.id === DEFAULT_VISION_MODEL_ID;
 }
 

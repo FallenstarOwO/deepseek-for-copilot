@@ -21,14 +21,7 @@ const zh: Translations = {
 	// Model descriptions
 	'model.deepseek-flash.detail': '图像理解与思考模式',
 	'model.deepseek-flash.tooltip': 'DeepSeek V4.1 Flash，支持图片与文本输入、思考模式和工具调用。',
-	'model.retirement.custom':
-		'**旧模型入口。**  \n请先确认服务商支持 DeepSeek V4.1 Flash。  \n选择“DeepSeek V4.1 Flash”以使用新模型。',
-	'model.retirement.flashRetired':
-		'**已下线。**  \n请求由 DeepSeek V4.1 Flash 提供服务，并按 Flash 价格计费。  \n选择“DeepSeek V4.1 Flash”以使用新模型。',
-	'model.flash.detail': '快速高效',
 	'model.pro.detail': '深度推理',
-	'model.flash-vision-exp.detail': '原生视觉实验模型',
-	'model.flash.tooltip': '快速高效的 DeepSeek V4 模型，推理能力接近 V4 Pro，API 定价更经济。',
 	'model.pro.tooltip': 'DeepSeek V4 模型，面向 Agent 编程、广泛世界知识和高阶推理任务。',
 	'model.pricing.currentPeak': '高峰时段',
 	'model.pricing.currentOffPeak': '空闲时段',
@@ -40,7 +33,6 @@ const zh: Translations = {
 	'model.pricing.transitionTime.today': '{0}',
 	'model.pricing.transitionTime.tomorrow': '明天 {0}',
 	'model.pricing.transitionTime.weekday': '{0} {1}',
-	'model.flash-vision-exp.tooltip': 'DeepSeek V4 Flash 视觉实验模型，支持原生图片与文本输入。',
 
 	// API Key
 	'auth.apiKeyRequiredDetail': '请先配置 API Key',
@@ -84,7 +76,7 @@ const zh: Translations = {
 	'vision.action.configureProxy': '配置视觉代理',
 	'vision.panel.title': 'DeepSeek 视觉代理',
 	'vision.panel.description':
-		'为 V4 Flash 和 Pro 入口配置一个将图片转换成文字描述的视觉模型。V4.1 Flash 和 Vision Exp 会直接处理原图。',
+		'为 V4 Pro 入口配置一个将图片转换成文字描述的视觉模型。V4.1 Flash 会直接处理原图。',
 	'vision.panel.source.vscodeLm': 'VS Code 模型',
 	'vision.panel.source.apiEndpoint': 'API 端点',
 	'vision.panel.field.source': '视觉代理来源',
@@ -288,15 +280,7 @@ const en: Translations = {
 	'model.deepseek-flash.detail': 'Vision and thinking mode',
 	'model.deepseek-flash.tooltip':
 		'DeepSeek V4.1 Flash with image and text input, thinking mode, and tool calling.',
-	'model.retirement.custom':
-		'**Legacy model entry.**  \nCheck that your provider supports DeepSeek V4.1 Flash.  \nSelect “DeepSeek V4.1 Flash” to use the new model.',
-	'model.retirement.flashRetired':
-		'**Retired.**  \nRequests are served by DeepSeek V4.1 Flash and billed at the Flash price.  \nSelect “DeepSeek V4.1 Flash” to use the new model.',
-	'model.flash.detail': 'Fast, general-purpose model',
 	'model.pro.detail': 'Most capable reasoning model',
-	'model.flash-vision-exp.detail': 'Experimental native vision model',
-	'model.flash.tooltip':
-		'Fast, efficient DeepSeek V4 model with reasoning close to V4 Pro and economical API pricing.',
 	'model.pro.tooltip':
 		'DeepSeek V4 model for agentic coding, broad world knowledge, and high-end reasoning.',
 	'model.pricing.currentPeak': 'Peak',
@@ -309,8 +293,6 @@ const en: Translations = {
 	'model.pricing.transitionTime.today': 'at {0}',
 	'model.pricing.transitionTime.tomorrow': 'tomorrow at {0}',
 	'model.pricing.transitionTime.weekday': 'on {0} at {1}',
-	'model.flash-vision-exp.tooltip':
-		'Experimental DeepSeek V4 Flash vision model with native image and text input.',
 
 	// API Key
 	'auth.apiKeyRequiredDetail': 'Please run DeepSeek: Set API Key to configure.',
@@ -359,7 +341,7 @@ const en: Translations = {
 	'vision.action.configureProxy': 'Configure Vision Proxy',
 	'vision.panel.title': 'DeepSeek Vision Proxy',
 	'vision.panel.description':
-		'Configure a vision model that turns images into text for V4 Flash and Pro entries. V4.1 Flash and Vision Exp process original images directly.',
+		'Configure a vision model that turns images into text for the V4 Pro entry. V4.1 Flash processes original images directly.',
 	'vision.panel.source.vscodeLm': 'VS Code model',
 	'vision.panel.source.apiEndpoint': 'API endpoint',
 	'vision.panel.field.source': 'Vision proxy source',

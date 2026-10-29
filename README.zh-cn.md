@@ -20,7 +20,7 @@
 > **非官方社区分支。** 由 `fallenstarowo` 从 [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot) 发布，与原作者 [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot) 无隶属或背书关系；MIT 许可证与原始版权声明均予保留。两个扩展注册同一个 `deepseek` 模型 vendor，**安装本扩展前请先卸载官方版本**。
 
 <p align="center">
-  <img src="resources/screenshots/01-picker.png" alt="DeepSeek V4 Flash、Flash Vision Exp 和 Pro 出现在 Copilot Chat 模型选择器中，并展示思考深度菜单" width="800">
+  <img src="resources/screenshots/01-picker.png" alt="DeepSeek V4.1 Flash 和 Pro 出现在 Copilot Chat 模型选择器中，并展示思考深度菜单" width="800">
 </p>
 
 喜欢 DeepSeek 的性价比，但不想放弃 GitHub Copilot 的 Agent 模式、工具调用和成熟的交互体验？本扩展将 **DeepSeek V4.1 Flash 等模型**直接接入 Copilot Chat 模型选择器，支持**原生视觉或视觉代理**、**思考模式**，并使用你自己的 API Key。
@@ -29,19 +29,19 @@
 
 - **不是替换 Copilot，而是增强它。** 没有新的侧边栏，没有新的聊天界面需要学习。只是在你已经在用的模型选择器中多了一个选项。
 - **Agent 模式、工具调用、Instructions、MCP、Skills——全部正常运作。** Copilot 的完整能力栈，现在跑在 DeepSeek 上。
-- **两种图片处理方式。** V4.1 Flash 和 Flash Vision Exp 会原生接收图片附件；V4 Flash 和 Pro 则保留原有文本上下文，由可配置的视觉代理将图片转换为文字描述。
+- **两种图片处理方式。** V4.1 Flash 会原生接收图片附件；V4 Pro 则保留原有文本上下文，由可配置的视觉代理将图片转换为文字描述。
 - **需自行提供 API Key，直接向 DeepSeek 付费。** 你的 API Key，你的账单，你的速率限制。密钥存储在操作系统密钥链中，不会以明文形式写入磁盘。
 
 ## 功能特性
 
 ### DeepSeek 模型出现在模型选择器中
-选择器包含 V4.1 Flash、V4 Pro，并保留旧 Flash 模型名对应的入口，支持长上下文、工具调用和可配置的思考强度。
+选择器包含 V4.1 Flash 和 V4 Pro，支持长上下文、工具调用和可配置的思考强度。
 
 ### 原生视觉与视觉代理
 可以根据对话需要选择不同的图片处理路径：
 
-- **DeepSeek V4.1 Flash 和 Flash Vision Exp** 直接处理图片附件，不经过视觉代理。
-- **DeepSeek V4 Flash 和 Pro** 入口使用视觉代理：先由支持图片输入的模型描述附件，再将描述连同对话内容交给 DeepSeek 主模型。自动模式会在可用时选择 Flash Vision Exp，同时继续支持显式配置其他 VS Code 模型或 API 端点。
+- **DeepSeek V4.1 Flash** 直接处理图片附件，不经过视觉代理。
+- **DeepSeek V4 Pro** 入口使用视觉代理：先由支持图片输入的模型描述附件，再将描述连同对话内容交给 DeepSeek 主模型。自动模式会在可用时选择 V4.1 Flash，同时继续支持显式配置其他 VS Code 模型或 API 端点。
 
 [上下文缓存](https://api-docs.deepseek.com/zh-cn/guides/kv_cache/)命中需要完整匹配已有的缓存前缀。
 
@@ -111,12 +111,8 @@ API Key 存储在 VS Code 的 `SecretStorage` 中（macOS 钥匙串 / Windows �
 |---|---|---|---|
 | **DeepSeek V4.1 Flash** | 原生图片输入 | `停用` / `轻量` / `标准` / `深度` | 使用模型名 `deepseek-flash` 调用 |
 | **DeepSeek V4 Pro** | 视觉代理 | `停用` / `轻量` / `标准` / `深度` | 继续提供 API 调用服务，计费方式保持不变 |
-| **DeepSeek V4 Flash** | 视觉代理 | `停用` / `轻量` / `标准` / `深度` | 原模型已下线；旧模型名仍可调用 |
-| **DeepSeek V4 Flash Vision Exp** | 原生图片输入 | `停用` / `轻量` / `标准` / `深度` | 原模型已下线；旧模型名仍可调用 |
 
-在官方 API 中，两个旧模型名（`deepseek-v4-flash` 和 `deepseek-v4-flash-vision-exp`）的请求均由 DeepSeek-V4.1-Flash 提供服务，按 Flash 价格计费。
-
-四个入口均支持思考模式、工具调用和 1M Token 上下文。官方 API 的下线、路由和计费说明见[模型与价格文档](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)。
+两个入口均支持思考模式、工具调用和 1M Token 上下文。计费说明见[模型与价格文档](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)。
 
 ## 设置项
 
@@ -127,8 +123,8 @@ API Key 存储在 VS Code 的 `SecretStorage` 中（macOS 钥匙串 / Windows �
 | `deepseek-copilot.maxTokens` | `0` | 最大输出 Token 数（`0` = API 默认值）。可用于成本控制 |
 | `deepseek-copilot.modelIdOverrides` | 预填官方 ID 映射 | 各 DeepSeek 模型入口对应的 API 模型 ID。仅在使用模型名不同的兼容第三方 API 时修改 |
 | `deepseek-copilot.debugMode` | `minimal` | 诊断模式：`minimal` 仅上报 token 用量，`metadata` 输出隐私安全日志，`verbose` 将完整请求 dump 和 pipeline snapshot 写入扩展 global storage。完整 dump 可能包含敏感提示词文本、工具定义、文件片段和图片描述。使用 `DeepSeek: 打开请求 Dump 目录` 打开 dump 位置 |
-| `deepseek-copilot.visionModel` | *(自动)* | V4 Flash 和 Pro 使用的视觉代理。自动模式会在可用时选择 Flash Vision Exp；也可通过 `DeepSeek: 配置视觉代理` 改用其他 VS Code 模型或 API 端点 |
-| `deepseek-copilot.visionPrompt` | *(内置)* | V4 Flash/Pro 的视觉代理用于描述图片附件的提示词，不影响 V4.1 Flash 或 Flash Vision Exp 的原生图片请求 |
+| `deepseek-copilot.visionModel` | *(自动)* | V4 Pro 使用的视觉代理。自动模式会在可用时选择 V4.1 Flash；也可通过 `DeepSeek: 配置视觉代理` 改用其他 VS Code 模型或 API 端点 |
+| `deepseek-copilot.visionPrompt` | *(内置)* | V4 Pro 的视觉代理用于描述图片附件的提示词，不影响 V4.1 Flash 的原生图片请求 |
 | `deepseek-copilot.experimental.stabilizeToolList` | `false` | 实验性设置。尝试预先激活 VS Code/Copilot 的虚拟工具，让传给 DeepSeek API 的 `tools` 参数在多轮对话中更完整、更稳定。当已启用工具跨轮次变化时，可能提高上下文缓存命中率。代价是 input tokens 可能增加；缓存命中的 input tokens 单价更低，但仍会计入用量。64 个或更少已启用工具时通常无需开启，除非工具列表仍在跨轮次变化 |
 
 思考强度可通过 Copilot Chat 的模型选择器对每个 DeepSeek 模型单独设置。
@@ -139,9 +135,7 @@ API Key 存储在 VS Code 的 `SecretStorage` 中（macOS 钥匙串 / Windows �
 {
   "deepseek-copilot.modelIdOverrides": {
     "deepseek-flash": "your-v4.1-flash-model-id",
-    "deepseek-v4-flash": "your-flash-model-id",
-    "deepseek-v4-pro": "your-pro-model-id",
-    "deepseek-v4-flash-vision-exp": "your-vision-model-id"
+    "deepseek-v4-pro": "your-pro-model-id"
   }
 }
 ```
