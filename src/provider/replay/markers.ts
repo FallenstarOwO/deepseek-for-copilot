@@ -14,8 +14,6 @@ import type {
 	ReplayMarkerMetadata,
 	ReplayMarkerParseResult,
 	ReplayMarkerPayloadFormat,
-	ToolVisionReplayEntry,
-	VisionMarkerTextIgnoredReason,
 } from './types';
 
 export function findFirstReplayMarker(
@@ -47,15 +45,13 @@ function parseReplayMarkerPart(part: unknown): ReplayMarkerParseResult | undefin
 }
 
 export function hasReplayMarkerMetadata(metadata: ReplayMarkerMetadata): boolean {
-	return Boolean(metadata.visionText || metadata.reasoningText || metadata.toolVision?.length);
+	return Boolean(metadata.reasoningText);
 }
 
 export function createReplayMarkerPart(
 	metadata: ReplayMarkerMetadata,
 ): vscode.LanguageModelDataPart {
 	const payload = encodeReplayMarkerJson({
-		...createVisionMarkerPayload(metadata.visionText),
-		...(metadata.toolVision?.length ? { toolVision: { results: metadata.toolVision } } : {}),
 		...createReasoningMarkerPayload(metadata.reasoningText),
 	});
 	return new vscode.LanguageModelDataPart(
@@ -103,15 +99,11 @@ export function parseReplayMarkerData(data: Uint8Array): ReplayMarkerParseResult
 			return { valid: false, error: segmentId.error };
 		}
 
-		const vision = parseVisionMarkerMetadata(value);
-		const toolVision = parseToolVisionMarkerMetadata(value);
 		const reasoning = parseReasoningMarkerMetadata(value);
-		const hasMetadata = vision.visionText || toolVision?.length || reasoning.reasoningText;
+		const hasMetadata = reasoning.reasoningText;
 		return {
 			valid: true,
 			segmentId: segmentId.value,
-			...vision,
-			...(toolVision ? { toolVision } : {}),
 			...reasoning,
 			legacySegmentOnly: Boolean(segmentId.value && !hasMetadata),
 			payloadFormat: decodedPayload.format,
@@ -136,53 +128,6 @@ function parseOptionalSegmentId(value: object): {
 		return { error: 'segment-id-not-uuid' };
 	}
 	return { value: segmentId.toLowerCase() };
-}
-
-function createVisionMarkerPayload(visionText: string | undefined): object {
-	return visionText ? { vision: { text: visionText } } : {};
-}
-
-function parseVisionMarkerMetadata(value: object): {
-	visionText?: string;
-	visionTextIgnoredReason?: VisionMarkerTextIgnoredReason;
-} {
-	const vision = (value as { vision?: unknown }).vision;
-	if (vision === undefined) {
-		return {};
-	}
-	if (!vision || typeof vision !== 'object' || Array.isArray(vision)) {
-		return { visionTextIgnoredReason: 'vision-not-object' };
-	}
-
-	const text = (vision as { text?: unknown }).text;
-	if (typeof text !== 'string') {
-		return { visionTextIgnoredReason: 'vision-text-not-string' };
-	}
-	if (text.length === 0) {
-		return { visionTextIgnoredReason: 'vision-text-empty' };
-	}
-
-	return { visionText: text };
-}
-
-function parseToolVisionMarkerMetadata(value: object): ToolVisionReplayEntry[] | undefined {
-	const results = (value as { toolVision?: { results?: unknown } }).toolVision?.results;
-	const entries = Array.isArray(results) ? results.filter(isToolVisionReplayEntry) : [];
-	return entries.length > 0 ? entries : undefined;
-}
-
-function isToolVisionReplayEntry(value: unknown): value is ToolVisionReplayEntry {
-	const entry = value as Partial<ToolVisionReplayEntry> | null;
-	return Boolean(
-		entry &&
-		typeof entry.callId === 'string' &&
-		entry.callId.length > 0 &&
-		typeof entry.resolvedContent === 'string' &&
-		entry.resolvedContent.length > 0 &&
-		typeof entry.imageParts === 'number' &&
-		Number.isSafeInteger(entry.imageParts) &&
-		entry.imageParts > 0,
-	);
 }
 
 function createReasoningMarkerPayload(reasoningText: string | undefined): object {

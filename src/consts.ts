@@ -24,9 +24,6 @@ export const SHOW_LOGS_URI_PATH = '/showLogs';
 /** URI path handled by this extension to open API key configuration. */
 export const CONFIGURE_API_KEY_URI_PATH = '/setApiKey';
 
-/** URI path handled by this extension to open vision model configuration. */
-export const SET_VISION_MODEL_URI_PATH = '/setVisionModel';
-
 // VS Code's internal LanguageModelChatMessageRole.System is not exposed in @types/vscode.
 export const LANGUAGE_MODEL_CHAT_SYSTEM_ROLE = 3;
 
@@ -58,7 +55,6 @@ export const MODELS: ModelDefinition[] = [
 		capabilities: {
 			toolCalling: true,
 			imageInput: true,
-			nativeImageInput: true,
 			thinking: {
 				supportedEfforts: ['low', 'high', 'max'],
 				defaultEffort: 'high',
@@ -88,8 +84,7 @@ export const MODELS: ModelDefinition[] = [
 		maxOutputTokens: 393216,
 		capabilities: {
 			toolCalling: true,
-			imageInput: true,
-			nativeImageInput: false,
+			imageInput: false,
 			thinking: {
 				supportedEfforts: ['low', 'high', 'max'],
 				defaultEffort: 'high',

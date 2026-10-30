@@ -22,13 +22,13 @@
   <img src="resources/screenshots/01-picker.png" alt="The DeepSeek group in the Copilot Chat model picker, listing DeepSeek V4 Pro and DeepSeek V4.1 Flash with the Max 1M thinking effort" width="798">
 </p>
 
-Love DeepSeek's price-performance but don't want to give up GitHub Copilot's agent mode, tool calling, and polished UI? This extension adds **DeepSeek V4.1 Flash and other DeepSeek models** to the Copilot Chat model selector — with **native vision or Vision Proxy**, **thinking mode**, and your own API key.
+Love DeepSeek's price-performance but don't want to give up GitHub Copilot's agent mode, tool calling, and polished UI? This extension adds **DeepSeek V4.1 Flash and other DeepSeek models** to the Copilot Chat model selector — with **native vision**, **thinking mode**, and your own API key.
 
 ## Why this extension?
 
 - **Don't replace Copilot — power it up.** No new sidebar, no new chat UI to learn. Just a new model in the picker you already use.
 - **Agent mode, tool calling, instructions, MCP, skills — all of it still works.** Copilot's entire stack, now running on DeepSeek.
-- **Two ways to work with images.** V4.1 Flash receives image attachments natively. V4 Pro keeps its existing text context while a configurable Vision Proxy turns images into descriptions.
+- **Native image input.** V4.1 Flash receives image attachments natively; V4 Pro is text-only.
 - **BYOK, pay DeepSeek directly.** Your API key, your bill, your rate limits. Stored in the OS keychain, never on disk.
 
 ## Features
@@ -36,17 +36,10 @@ Love DeepSeek's price-performance but don't want to give up GitHub Copilot's age
 ### DeepSeek models in the model picker
 The picker includes V4.1 Flash and V4 Pro, with long context, tool calling, and configurable thinking effort.
 
-### Native Vision and Vision Proxy
-Choose the image path that fits the conversation:
-
-- **DeepSeek V4.1 Flash** handles image attachments natively, without Vision Proxy.
-- The **DeepSeek V4 Pro** entry uses Vision Proxy: an image-capable model first describes each attachment, then the main DeepSeek model receives the description with the conversation. Auto mode selects V4.1 Flash when available, while an explicitly configured VS Code model or API endpoint remains supported.
+### Native Vision
+**DeepSeek V4.1 Flash** handles image attachments natively: images are sent to the API together with the conversation. **DeepSeek V4 Pro** does not accept image input and works with text only.
 
 [Context caching](https://api-docs.deepseek.com/guides/kv_cache/) requires a full match with a cached prefix.
-
-<p align="center">
-  <img src="resources/screenshots/03-vision.png" alt="Dropping an image into Copilot Chat and DeepSeek responding to it via the vision proxy" width="800">
-</p>
 
 ### Thinking Mode and Effort Control
 Supports DeepSeek's thinking mode and `reasoning_content`. `none` disables thinking mode; `low`, `high` (default), and `max` set the thinking effort.
@@ -109,7 +102,7 @@ Install it in one of these ways:
 | Model Entry | Image Handling | Thinking Effort | Official API Status |
 |---|---|---|---|
 | **DeepSeek V4.1 Flash** | Native image input | `none` / `low` / `high` / `max` | Available via `deepseek-flash` |
-| **DeepSeek V4 Pro** | Vision Proxy | `none` / `low` / `high` / `max` | API services continue; billing method unchanged |
+| **DeepSeek V4 Pro** | Text only (no image input) | `none` / `low` / `high` / `max` | API services continue; billing method unchanged |
 
 Both entries support thinking mode, tool calling, and 1M token context. See the official [Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) documentation for billing details.
 
@@ -121,9 +114,7 @@ Both entries support thinking mode, tool calling, and 1M token context. See the 
 | `deepseek-copilot.requestHeaders` | `{}` | Custom headers for chat completions. [Configuration guide](https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/docs/settings/request-headers.en.md) |
 | `deepseek-copilot.maxTokens` | `0` | Max output tokens (`0` = API default). Useful for cost control |
 | `deepseek-copilot.modelIdOverrides` | prefilled official ID map | API model IDs to send for each DeepSeek model entry. Change only for compatible third-party APIs with different model names |
-| `deepseek-copilot.debugMode` | `minimal` | Diagnostic mode: `minimal` for token usage only, `metadata` for privacy-preserving logs, or `verbose` for full request dumps and pipeline snapshots under extension global storage. Full dumps may include sensitive prompt text, tool schemas, file snippets, and image descriptions. Use `DeepSeek: Open Request Dumps Folder` to open the dump location |
-| `deepseek-copilot.visionModel` | *(auto)* | Vision Proxy used by V4 Pro. Auto mode selects V4.1 Flash when available; configure another VS Code model or API endpoint with `DeepSeek: Configure Vision Proxy` |
-| `deepseek-copilot.visionPrompt` | *(built-in)* | Prompt used by V4 Pro's Vision Proxy to describe image attachments. It does not affect native V4.1 Flash requests |
+| `deepseek-copilot.debugMode` | `minimal` | Diagnostic mode: `minimal` for token usage only, `metadata` for privacy-preserving logs, or `verbose` for full request dumps and pipeline snapshots under extension global storage. Full dumps may include sensitive prompt text, tool schemas, file snippets, and image attachments. Use `DeepSeek: Open Request Dumps Folder` to open the dump location |
 | `deepseek-copilot.experimental.stabilizeToolList` | `false` | Experimental. Tries to pre-activate VS Code/Copilot virtual tools so the DeepSeek API `tools` parameter is more complete and stable across turns. May improve context-cache hit rate when enabled tools change between turns. Can increase input tokens because more function definitions may be included; cache-hit input tokens are cheaper but still count toward usage. Usually leave it off with 64 or fewer enabled tools unless the tool list still changes across turns |
 
 Thinking Effort is configured from Copilot Chat's model picker for each DeepSeek model.
@@ -169,14 +160,14 @@ Workaround: keep at least one VS Code window open while working in the Agents wi
 |---|---|---|---|
 | Works inside Copilot Chat | ✅ | ✅ | ❌ separate UI |
 | Agent mode, tools, skills | ✅ | ✅ | ⚠️ reimplemented |
-| Vision support | ✅ native + proxied | ❌ | ❌ |
+| Vision support | ✅ native | ❌ | ❌ |
 | No extra process to run | ✅ | ❌ | ✅ |
 | One-click install | ✅ | ❌ | ✅ |
 | API key in OS keychain | ✅ | ❌ | ⚠️ varies |
 
 ## Acknowledgements
 
-This project is a community fork of **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** by **Vizards**. The provider implementation, the vision pipeline, the i18n scaffolding, and most of the architecture come from that project — this fork would not exist without it. The upstream work is MIT licensed, and its copyright notice is preserved in [LICENSE](LICENSE) and shipped with every build.
+This project is a community fork of **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** by **Vizards**. The provider implementation, the i18n scaffolding, and most of the architecture come from that project — this fork would not exist without it. The upstream work is MIT licensed, and its copyright notice is preserved in [LICENSE](LICENSE) and shipped with every build.
 
 Thanks also to the upstream contributors and everyone who reported issues or sent pull requests there; the features in this fork build directly on that groundwork.
 

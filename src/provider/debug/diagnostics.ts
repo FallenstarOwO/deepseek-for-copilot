@@ -15,8 +15,6 @@ import {
 import type { ConversationSegment } from '../segment';
 import { ACTIVATE_TOOL_PREFIX } from '../tools/consts';
 import type { ActivatePreflightInspection } from '../tools/preflight';
-import type { VisionResolutionStats as VisionPipelineStats, VisionProxySource } from '../vision';
-import { IMAGE_DESCRIPTION_UNAVAILABLE } from '../vision/consts';
 
 const LARGE_MESSAGE_CHARS = 10_000;
 const HASH_WINDOW_CHARS = 2_048;
@@ -62,7 +60,6 @@ export interface CacheTraceStats {
 	missingPostToolFinalReasoningMessages: number;
 	imageDescriptionMessages: number;
 	imageDescriptionParts: number;
-	unableImageMessages: number;
 	urlMessages: number;
 	urlCount: number;
 	codeFenceMessages: number;
@@ -81,7 +78,6 @@ export interface CacheTraceMessageSummary {
 	contentChars: number;
 	contentLines: number;
 	imageDescriptionCount: number;
-	unableImageCount: number;
 	urlCount: number;
 	codeFenceCount: number;
 	likelyPathCount: number;
@@ -173,10 +169,6 @@ export interface BeginCacheDiagnosticsOptions {
 	thinkingEffort: string;
 	maxTokens: number | undefined;
 	inputMessages: readonly vscode.LanguageModelChatRequestMessage[];
-	resolvedMessages: readonly vscode.LanguageModelChatRequestMessage[];
-	visionModelId?: string;
-	visionProxySource?: VisionProxySource;
-	visionStats?: VisionPipelineStats;
 }
 
 export interface CacheDiagnosticsDoneInfo {
@@ -200,7 +192,6 @@ export interface ReplayMarkerReportInfo {
 	status: ReplayMarkerReportStatus;
 	trigger?: ReplayMarkerReportTrigger;
 	markerBytes?: number;
-	visionTextChars?: number;
 	reasoningTextChars?: number;
 	reason?: 'cancelled' | 'stream-error' | 'no-replay-data';
 	error?: unknown;
@@ -289,20 +280,6 @@ export function logToolFlowDiagnostics({
 	logger.info(formatRequestLogLine(requestKind, message));
 }
 
-interface VisionMessageStats {
-	imageHandlingMode: 'none' | 'proxy' | 'native';
-	inputImageParts: number;
-	inputImageMessages: number;
-	inputImageBytes: number;
-	forwardedImageParts: number;
-	describedImageMessages: number;
-	failedImageMessages: number;
-	droppedImageParts: number;
-	historyDescriptionMessages: number;
-	visionModelId?: string;
-	visionProxySource?: VisionProxySource;
-}
-
 interface HostPromptTrace {
 	hostFreezeCustomizationsIndex: boolean | 'unknown';
 	systemMessageIndex: number | null;
@@ -387,12 +364,6 @@ class DefaultCacheDiagnosticsRecorder implements CacheDiagnosticsRecorder {
 			previousScopedCacheTrace.cacheTraceKey !== cacheTrace.cacheTraceKey
 				? compareCacheTraceSnapshots(previousScopedCacheTrace, cacheTrace)
 				: undefined;
-		const visionResolution = summarizeVisionResolution(
-			options.inputMessages,
-			options.resolvedMessages,
-			options.visionModelId,
-			options.visionProxySource,
-		);
 
 		logger.info(
 			formatRequestLogLine(
@@ -441,10 +412,6 @@ class DefaultCacheDiagnosticsRecorder implements CacheDiagnosticsRecorder {
 			} else {
 				logger.info(message);
 			}
-		}
-		const visionTrace = formatVisionTrace(visionResolution, options.visionStats);
-		if (visionTrace) {
-			logger.info(formatRequestLogLine(requestKind, `[cache-trace #${requestId}] ${visionTrace}`));
 		}
 		if (cacheTraceComparison) {
 			logger.info(
@@ -692,8 +659,6 @@ function formatSegmentTrace(segment: ConversationSegment): string {
 function formatReplayMarkerReport(info: ReplayMarkerReportInfo): string {
 	const trigger = info.trigger ? ` trigger=${info.trigger}` : '';
 	const markerBytes = info.markerBytes === undefined ? '' : ` markerBytes=${info.markerBytes}`;
-	const visionTextChars =
-		info.visionTextChars === undefined ? '' : ` visionTextChars=${info.visionTextChars}`;
 	const reasoningTextChars =
 		info.reasoningTextChars === undefined ? '' : ` reasoningTextChars=${info.reasoningTextChars}`;
 	const reason = info.reason ? ` reason=${info.reason}` : '';
@@ -702,7 +667,6 @@ function formatReplayMarkerReport(info: ReplayMarkerReportInfo): string {
 		`replayMarker status=${info.status}` +
 		trigger +
 		markerBytes +
-		visionTextChars +
 		reasoningTextChars +
 		reason +
 		error
@@ -827,96 +791,6 @@ function getCacheHitRate(usage: DeepSeekUsage): string {
 	return cacheTotal > 0 ? ((cacheHit / cacheTotal) * 100).toFixed(0) : 'n/a';
 }
 
-function summarizeVisionResolution(
-	inputMessages: readonly vscode.LanguageModelChatRequestMessage[],
-	resolvedMessages: readonly vscode.LanguageModelChatRequestMessage[],
-	visionModelId: string | undefined,
-	visionProxySource: VisionProxySource | undefined,
-): VisionMessageStats {
-	const stats: VisionMessageStats = {
-		imageHandlingMode: 'none',
-		inputImageParts: 0,
-		inputImageMessages: 0,
-		inputImageBytes: 0,
-		forwardedImageParts: 0,
-		describedImageMessages: 0,
-		failedImageMessages: 0,
-		droppedImageParts: 0,
-		historyDescriptionMessages: 0,
-		visionModelId,
-		visionProxySource,
-	};
-
-	for (const [index, message] of inputMessages.entries()) {
-		const imageParts = countImageDataParts(message);
-		stats.inputImageBytes += countImageDataBytes(message);
-		const inputText = getMessageText(message);
-		if (countLiteral(inputText, '[Image Description:') > 0) {
-			stats.historyDescriptionMessages += 1;
-		}
-
-		if (imageParts > 0) {
-			stats.inputImageMessages += 1;
-			stats.inputImageParts += imageParts;
-
-			const resolvedMessage = resolvedMessages[index];
-			const resolvedImageParts = resolvedMessage ? countImageDataParts(resolvedMessage) : 0;
-			stats.forwardedImageParts += Math.min(imageParts, resolvedImageParts);
-			const resolvedText = resolvedMessage ? getMessageText(resolvedMessage) : '';
-			const newDescriptions = Math.max(
-				0,
-				countLiteral(resolvedText, '[Image Description:') -
-					countLiteral(inputText, '[Image Description:'),
-			);
-			const newFailures = Math.max(
-				0,
-				countLiteral(resolvedText, IMAGE_DESCRIPTION_UNAVAILABLE) -
-					countLiteral(inputText, IMAGE_DESCRIPTION_UNAVAILABLE),
-			);
-
-			if (newDescriptions > 0) {
-				stats.describedImageMessages += 1;
-			}
-			if (newFailures > 0) {
-				stats.failedImageMessages += 1;
-			}
-			if (resolvedImageParts < imageParts && newDescriptions === 0 && newFailures === 0) {
-				stats.droppedImageParts += imageParts - resolvedImageParts;
-			}
-		}
-	}
-
-	if (stats.inputImageParts > 0) {
-		// If any image survives in resolved messages we treat this as native forwarding;
-		// otherwise assume proxy replacement consumed all image parts.
-		stats.imageHandlingMode = stats.forwardedImageParts > 0 ? 'native' : 'proxy';
-	}
-	if (visionProxySource) {
-		// Source metadata from the pipeline is authoritative when present.
-		stats.imageHandlingMode = 'proxy';
-	}
-
-	return stats;
-}
-
-function countImageDataParts(message: vscode.LanguageModelChatRequestMessage): number {
-	return message.content.filter((part) => isImageDataPart(part)).length;
-}
-
-function countImageDataBytes(message: vscode.LanguageModelChatRequestMessage): number {
-	let bytes = 0;
-	for (const part of message.content) {
-		if (isImageDataPart(part)) {
-			bytes += part.data.byteLength;
-		}
-	}
-	return bytes;
-}
-
-function isImageDataPart(part: unknown): part is vscode.LanguageModelDataPart {
-	return part instanceof vscode.LanguageModelDataPart && part.mimeType.startsWith('image/');
-}
-
 function getMessageText(message: vscode.LanguageModelChatRequestMessage): string {
 	let text = '';
 	for (const part of message.content) {
@@ -925,143 +799,6 @@ function getMessageText(message: vscode.LanguageModelChatRequestMessage): string
 		}
 	}
 	return text;
-}
-
-function formatVisionTrace(
-	stats: VisionMessageStats,
-	pipelineStats: VisionPipelineStats | undefined,
-): string | undefined {
-	if (
-		stats.inputImageParts === 0 &&
-		stats.historyDescriptionMessages === 0 &&
-		!hasVisionPipelineActivity(pipelineStats)
-	) {
-		return undefined;
-	}
-
-	const visionModel = formatVisionModel(stats, pipelineStats);
-	// Prefer precise pipeline counters when available; fall back to reconstructed
-	// message-based stats for older/non-pipeline paths.
-	const mode = pipelineStats?.imageHandlingMode ?? stats.imageHandlingMode;
-	const inputImageParts = pipelineStats?.input.imageParts ?? stats.inputImageParts;
-	const inputImageMessages = pipelineStats?.input.imageMessages ?? stats.inputImageMessages;
-	const inputImageBytes = pipelineStats?.input.imageBytes ?? stats.inputImageBytes;
-	const forwardedImageParts = pipelineStats?.input.forwardedImageParts ?? stats.forwardedImageParts;
-	const droppedImageParts = pipelineStats?.input.droppedImageParts ?? stats.droppedImageParts;
-	const toolImageParts = pipelineStats?.tool.imageParts ?? 0;
-	const toolImageBytes = pipelineStats?.tool.imageBytes ?? 0;
-	const toolForwardedImageParts = pipelineStats?.tool.forwardedImageParts ?? 0;
-	const toolDroppedImageParts = pipelineStats?.tool.droppedImageParts ?? 0;
-	const note =
-		inputImageParts + toolImageParts === 0 && stats.historyDescriptionMessages > 0
-			? ' note=history-only'
-			: '';
-	const parts = [
-		`vision mode=${mode}`,
-		`images=${inputImageParts + toolImageParts}`,
-		`forwarded=${forwardedImageParts + toolForwardedImageParts}`,
-		`dropped=${droppedImageParts + toolDroppedImageParts}`,
-		`bytes=${inputImageBytes + toolImageBytes}`,
-		`inputImages=${inputImageParts}`,
-		`inputForwarded=${forwardedImageParts}`,
-		`inputDropped=${droppedImageParts}`,
-		`inputBytes=${inputImageBytes}`,
-		`inputMessages=${inputImageMessages}`,
-	];
-
-	if (pipelineStats && hasVisionPipelineActivity(pipelineStats)) {
-		parts.push(
-			`toolResultImages=${toolImageParts}`,
-			`toolResults=${pipelineStats.tool.resultsWithImages}`,
-			`toolResultBytes=${toolImageBytes}`,
-			`toolForwarded=${toolForwardedImageParts}`,
-			`toolDropped=${toolDroppedImageParts}`,
-			`current=${pipelineStats.currentImageMessages}`,
-			`generated=${pipelineStats.generatedImageMessages}`,
-			`replayed=${pipelineStats.replayedImageMessages}`,
-			`omitted=${pipelineStats.omittedImageMessages}`,
-		);
-		if (pipelineStats.input.imageMimes.length > 0) {
-			parts.push(`mimes=${formatVisionMimeStats(pipelineStats.input.imageMimes)}`);
-		}
-		if (pipelineStats.tool.imageMimes.length > 0) {
-			parts.push(`toolMimes=${formatVisionMimeStats(pipelineStats.tool.imageMimes)}`);
-		}
-		appendNumberIfNonZero(parts, 'unavailable', pipelineStats.unavailableImageMessages);
-		appendNumberIfNonZero(parts, 'failed', pipelineStats.failedImageMessages);
-		appendNumberIfNonZero(parts, 'markerChars', pipelineStats.markerVisionTextChars);
-		appendNumberIfNonZero(parts, 'invalidMarkerVision', pipelineStats.invalidMarkerVisionMetadata);
-	} else {
-		appendNumberIfNonZero(parts, 'generated', stats.describedImageMessages);
-		appendNumberIfNonZero(parts, 'failed', stats.failedImageMessages);
-	}
-
-	parts.push(`model=${visionModel}`);
-	if (stats.visionProxySource) {
-		parts.push(`source=${stats.visionProxySource}`);
-	}
-	appendNumberIfNonZero(parts, 'historyDescriptions', stats.historyDescriptionMessages);
-	return parts.join(' ') + note;
-}
-
-function formatVisionMimeStats(stats: VisionPipelineStats['input']['imageMimes']): string {
-	return stats
-		.map(
-			(item) =>
-				`${JSON.stringify(item.mimeType)}:parts=${item.imageParts}:bytes=${item.imageBytes}`,
-		)
-		.join(',');
-}
-
-function hasVisionPipelineActivity(stats: VisionPipelineStats | undefined): boolean {
-	if (!stats) {
-		return false;
-	}
-	return (
-		stats.imageHandlingMode !== 'none' ||
-		stats.input.imageParts > 0 ||
-		stats.input.imageBytes > 0 ||
-		stats.input.forwardedImageParts > 0 ||
-		stats.input.droppedImageParts > 0 ||
-		stats.tool.imageParts > 0 ||
-		stats.tool.forwardedImageParts > 0 ||
-		stats.tool.droppedImageParts > 0 ||
-		stats.currentImageMessages > 0 ||
-		stats.generatedImageMessages > 0 ||
-		stats.replayedImageMessages > 0 ||
-		stats.omittedImageMessages > 0 ||
-		stats.unavailableImageMessages > 0 ||
-		stats.failedImageMessages > 0 ||
-		stats.invalidMarkerVisionMetadata > 0
-	);
-}
-
-function formatVisionModel(
-	stats: VisionMessageStats,
-	pipelineStats: VisionPipelineStats | undefined,
-): string {
-	if (stats.visionModelId) {
-		return stats.visionModelId;
-	}
-	const pipelineImageParts = pipelineStats
-		? pipelineStats.input.imageParts + pipelineStats.tool.imageParts
-		: stats.inputImageParts;
-	if (pipelineImageParts === 0) {
-		return 'none';
-	}
-	const droppedImageParts = pipelineStats
-		? pipelineStats.input.droppedImageParts + pipelineStats.tool.droppedImageParts
-		: stats.droppedImageParts;
-	const generatedImageMessages = pipelineStats
-		? pipelineStats.generatedImageMessages
-		: stats.describedImageMessages;
-	const failedImageMessages = pipelineStats
-		? pipelineStats.failedImageMessages
-		: stats.failedImageMessages;
-	if (droppedImageParts > 0 && generatedImageMessages === 0 && failedImageMessages === 0) {
-		return 'none';
-	}
-	return 'unknown';
 }
 
 function formatVscodeMessageTrace(
@@ -1382,11 +1119,10 @@ export function formatCacheTraceSnapshot(snapshot: CacheTraceSnapshot): string {
 export function formatCacheTraceDetailLines(snapshot: CacheTraceSnapshot): string[] {
 	const stats = snapshot.stats;
 	const lines: string[] = [];
-	if (stats.imageDescriptionParts > 0 || stats.unableImageMessages > 0) {
+	if (stats.imageDescriptionParts > 0) {
 		lines.push(
 			`imageText imageDescMsgs=${stats.imageDescriptionMessages}` +
-				` imageDescParts=${stats.imageDescriptionParts}` +
-				` unableImageMsgs=${stats.unableImageMessages}`,
+				` imageDescParts=${stats.imageDescriptionParts}`,
 		);
 	}
 	if (stats.urlMessages > 0 || stats.codeFenceMessages > 0) {
@@ -1700,7 +1436,6 @@ function summarizeMessage(
 	const hasReasoningContent = message.reasoning_content !== undefined;
 	const hasEmptyReasoningContent = hasReasoningContent && reasoningChars === 0;
 	const imageDescriptionCount = countLiteral(contentText, '[Image Description:');
-	const unableImageCount = countLiteral(contentText, IMAGE_DESCRIPTION_UNAVAILABLE);
 	const urlCount = countRegex(contentText, /https?:\/\//g);
 	const codeFenceCount = countLiteral(contentText, '```');
 	const likelyPathCount = countLikelyPaths(contentText);
@@ -1715,7 +1450,6 @@ function summarizeMessage(
 		contentChars: contentText.length,
 		contentLines: countLines(contentText),
 		imageDescriptionCount,
-		unableImageCount,
 		urlCount,
 		codeFenceCount,
 		likelyPathCount,
@@ -1885,7 +1619,6 @@ function summarizeStats(messages: DeepSeekMessage[], toolCount: number): CacheTr
 	let missingPostToolFinalReasoningMessages = 0;
 	let imageDescriptionMessages = 0;
 	let imageDescriptionParts = 0;
-	let unableImageMessages = 0;
 	let urlMessages = 0;
 	let urlCount = 0;
 	let codeFenceMessages = 0;
@@ -1915,9 +1648,6 @@ function summarizeStats(messages: DeepSeekMessage[], toolCount: number): CacheTr
 		if (imageDescriptions > 0) {
 			imageDescriptionMessages += 1;
 			imageDescriptionParts += imageDescriptions;
-		}
-		if (contentText.includes(IMAGE_DESCRIPTION_UNAVAILABLE)) {
-			unableImageMessages += 1;
 		}
 
 		const messageUrlCount = countRegex(contentText, /https?:\/\//g);
@@ -2024,7 +1754,6 @@ function summarizeStats(messages: DeepSeekMessage[], toolCount: number): CacheTr
 		missingPostToolFinalReasoningMessages,
 		imageDescriptionMessages,
 		imageDescriptionParts,
-		unableImageMessages,
 		urlMessages,
 		urlCount,
 		codeFenceMessages,
@@ -2165,7 +1894,6 @@ function formatMessageSummary(summary: CacheTraceMessageSummary | undefined): st
 function formatRelevantMarkerSummary(summary: CacheTraceMessageSummary): string {
 	const markers: string[] = [];
 	appendNumberIfNonZero(markers, 'imageDesc', summary.imageDescriptionCount);
-	appendNumberIfNonZero(markers, 'unableImage', summary.unableImageCount);
 	appendNumberIfNonZero(markers, 'url', summary.urlCount);
 	appendNumberIfNonZero(markers, 'codeFence', summary.codeFenceCount);
 	return markers.join(',');

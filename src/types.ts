@@ -144,7 +144,6 @@ export interface ModelDefinition {
 	capabilities: {
 		toolCalling: boolean;
 		imageInput: boolean;
-		nativeImageInput?: boolean;
 		thinking: ThinkingCapability | false;
 	};
 	requiresThinkingParam: boolean;

@@ -1,26 +1,9 @@
 import vscode from 'vscode';
 import { t } from '../../i18n';
-import {
-	TOOL_DRIFT_NOTICE_END,
-	TOOL_DRIFT_NOTICE_START,
-	VISION_PROXY_NOTICE_END,
-	VISION_PROXY_NOTICE_START,
-} from './consts';
-import { formatVisionProxyDisplayMessage } from '../vision/protocols/errors';
+import { TOOL_DRIFT_NOTICE_END, TOOL_DRIFT_NOTICE_START } from './consts';
 
 type LanguageModelChatRequestMessagePart =
 	vscode.LanguageModelChatRequestMessage['content'][number];
-
-let visionProxyConfigurationUrl = 'command:deepseek-copilot.setVisionModel';
-let showLogsUrl = 'command:deepseek-copilot.showLogs';
-
-export function setVisionProxyConfigurationUrl(url: string): void {
-	visionProxyConfigurationUrl = url;
-}
-
-export function setProviderNoticeShowLogsUrl(url: string): void {
-	showLogsUrl = url;
-}
 
 export function createToolDriftNotice(): string {
 	return [
@@ -30,37 +13,6 @@ export function createToolDriftNotice(): string {
 		createBlockquote(t('notice.toolDrift')),
 		'',
 		TOOL_DRIFT_NOTICE_END,
-		'',
-	].join('\n');
-}
-
-export function createVisionProxyMissingNotice(): string {
-	return [
-		'',
-		VISION_PROXY_NOTICE_START,
-		'',
-		createBlockquote(t('notice.visionProxyMissing', visionProxyConfigurationUrl)),
-		'',
-		VISION_PROXY_NOTICE_END,
-		'',
-	].join('\n');
-}
-
-export function createVisionProxyFailureNotice(errorCode: string, errorMessage: string): string {
-	return [
-		'',
-		VISION_PROXY_NOTICE_START,
-		'',
-		createBlockquote(
-			t(
-				'notice.visionProxyFailure',
-				escapeBoldText(formatVisionProxyDisplayMessage(errorCode, errorMessage)),
-				createConfigureVisionProxyLink(),
-				createShowLogsLink(),
-			),
-		),
-		'',
-		VISION_PROXY_NOTICE_END,
 		'',
 	].join('\n');
 }
@@ -111,14 +63,7 @@ export function filterProviderNotices(
 }
 
 function stripProviderNotices(value: string): string {
-	let result = value;
-	for (const marker of [
-		{ start: TOOL_DRIFT_NOTICE_START, end: TOOL_DRIFT_NOTICE_END },
-		{ start: VISION_PROXY_NOTICE_START, end: VISION_PROXY_NOTICE_END },
-	]) {
-		result = stripProviderNotice(result, marker.start, marker.end);
-	}
-	return result;
+	return stripProviderNotice(value, TOOL_DRIFT_NOTICE_START, TOOL_DRIFT_NOTICE_END);
 }
 
 function stripProviderNotice(value: string, startMarker: string, endMarker: string): string {
@@ -158,16 +103,4 @@ function createBlockquote(value: string): string {
 		.split(/\r?\n/)
 		.map((line) => (line.length > 0 ? `> ${line}` : '>'))
 		.join('\n');
-}
-
-function createConfigureVisionProxyLink(): string {
-	return `[${t('vision.action.configureProxy')}](${visionProxyConfigurationUrl})`;
-}
-
-function createShowLogsLink(): string {
-	return `[${t('error.action.viewDetails')}](${showLogsUrl})`;
-}
-
-function escapeBoldText(value: string): string {
-	return value.replaceAll('*', '\\*');
 }

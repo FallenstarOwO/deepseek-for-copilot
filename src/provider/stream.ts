@@ -151,7 +151,6 @@ function reportSkippedReplayMarkerIfNeeded(
 	prepared.cacheDiagnostics.onReplayMarkerReport({
 		status: 'skipped',
 		reason,
-		visionTextChars: prepared.visionMarkerTextChars,
 		reasoningTextChars: state.accumulatedReasoning.length || undefined,
 		error,
 	});
@@ -163,13 +162,12 @@ function reportReplayMarker(
 	state: ResponseStreamState,
 	trigger: ReplayMarkerReportTrigger,
 ): void {
-	const metadata = getReplayMarkerMetadata(prepared, state);
+	const metadata = getReplayMarkerMetadata(state);
 	if (!hasReplayMarkerMetadata(metadata)) {
 		prepared.cacheDiagnostics.onReplayMarkerReport({
 			status: 'skipped',
 			trigger,
 			reason: 'no-replay-data',
-			visionTextChars: prepared.visionMarkerTextChars,
 			reasoningTextChars: state.accumulatedReasoning.length || undefined,
 		});
 		return;
@@ -182,14 +180,12 @@ function reportReplayMarker(
 			status: 'reported',
 			trigger,
 			markerBytes: markerPart.data.byteLength,
-			visionTextChars: prepared.visionMarkerTextChars,
 			reasoningTextChars: state.accumulatedReasoning.length || undefined,
 		});
 	} catch (error) {
 		prepared.cacheDiagnostics.onReplayMarkerReport({
 			status: 'failed',
 			trigger,
-			visionTextChars: prepared.visionMarkerTextChars,
 			reasoningTextChars: state.accumulatedReasoning.length || undefined,
 			error,
 		});
@@ -200,12 +196,8 @@ function reportReplayMarker(
 	}
 }
 
-function getReplayMarkerMetadata(
-	prepared: PreparedChatRequest,
-	state: ResponseStreamState,
-): ReplayMarkerMetadata {
+function getReplayMarkerMetadata(state: ResponseStreamState): ReplayMarkerMetadata {
 	return {
-		...prepared.replayMarkerMetadata,
 		reasoningText: state.accumulatedReasoning || undefined,
 	};
 }

@@ -5,7 +5,7 @@ import { getApiModelId, getBaseUrl, getMaxTokens, getRequestHeaders } from '../c
 import { MODELS } from '../consts';
 import { isOfficialDeepSeekBaseUrl } from '../endpoint';
 import type { DeepSeekRequest } from '../types';
-import { convertMessages, countMessageChars } from './convert';
+import { convertMessages, countMessageChars, hasImageParts } from './convert';
 import {
 	dumpDeepSeekRequest,
 	type CacheDiagnosticsRecorder,
@@ -13,15 +13,9 @@ import {
 } from './debug';
 import { resolveRequestHeaders } from './headers';
 import { getConfiguredThinkingEffort, type ModelConfigurationOptions } from './models';
-import type { ReplayMarkerMetadata } from './replay';
 import { classifyDeepSeekRequest, shouldForceThinkingNone, type RequestKind } from './routing';
 import type { ConversationSegment } from './segment';
 import { collectTrailingToolResultIds, prepareRequestTools } from './tools/request';
-import {
-	finalizeVisionResolutionStats,
-	prepareVisionMessages,
-	type VisionDescriber,
-} from './vision';
 
 export interface PreparedChatRequest {
 	client: DeepSeekClient;
@@ -33,9 +27,6 @@ export interface PreparedChatRequest {
 	cacheDiagnostics: CacheDiagnosticsRun;
 	requestKind: RequestKind;
 	segment: ConversationSegment;
-	replayMarkerMetadata: ReplayMarkerMetadata;
-	visionMarkerTextChars?: number;
-	initialResponseNotice?: string;
 }
 
 export interface PrepareChatRequestOptions {
@@ -46,9 +37,7 @@ export interface PrepareChatRequestOptions {
 	segment: ConversationSegment;
 	messages: readonly vscode.LanguageModelChatRequestMessage[];
 	options: vscode.ProvideLanguageModelChatResponseOptions;
-	token: vscode.CancellationToken;
 	cacheDiagnostics: CacheDiagnosticsRecorder;
-	getVisionDescriber: () => Promise<VisionDescriber | undefined>;
 }
 
 export async function prepareChatRequest({
@@ -59,9 +48,7 @@ export async function prepareChatRequest({
 	segment,
 	messages,
 	options,
-	token,
 	cacheDiagnostics,
-	getVisionDescriber,
 }: PrepareChatRequestOptions): Promise<PreparedChatRequest> {
 	const apiKey = await authManager.getApiKey();
 	if (!apiKey) {
@@ -74,27 +61,15 @@ export async function prepareChatRequest({
 	const modelDef = MODELS.find((m) => m.id === modelInfo.id);
 	const thinkingCapability = modelDef?.capabilities.thinking;
 	const isThinkingModel = Boolean(thinkingCapability);
-	const nativeImageInput = modelDef?.capabilities.nativeImageInput === true;
+	const imageInput = modelDef?.capabilities.imageInput === true;
 	const maxTokens = getMaxTokens();
-	const visionResolution = await prepareVisionMessages({
-		messages,
-		nativeImageInput,
-		token,
-		getDescriber: getVisionDescriber,
-	});
 
-	const resolvedMessages = visionResolution.messages;
-
-	const deepseekMessages = convertMessages(resolvedMessages, isThinkingModel, nativeImageInput);
-	finalizeVisionResolutionStats(visionResolution.stats, deepseekMessages);
+	const deepseekMessages = convertMessages(messages, isThinkingModel, imageInput);
 	const tools = prepareRequestTools(modelDef?.capabilities.toolCalling, options);
 
 	const totalRequestChars = countMessageChars(deepseekMessages);
-	const hasNativeImages =
-		visionResolution.stats.imageHandlingMode === 'native' &&
-		visionResolution.stats.input.forwardedImageParts +
-			visionResolution.stats.tool.forwardedImageParts >
-			0;
+	const hasNativeImages = hasImageParts(deepseekMessages);
+
 	const baseRequest: DeepSeekRequest = {
 		model: getApiModelId(modelInfo.id),
 		messages: deepseekMessages,
@@ -135,11 +110,7 @@ export async function prepareChatRequest({
 		thinkingEffort,
 		maxTokens,
 		inputMessages: messages,
-		resolvedMessages,
 		requestOptions: options,
-		visionModelId: visionResolution.visionModelId,
-		visionProxySource: visionResolution.visionProxySource,
-		visionStats: visionResolution.stats,
 	});
 
 	const diagnosticsRun = cacheDiagnostics.beginRequest({
@@ -151,10 +122,6 @@ export async function prepareChatRequest({
 		thinkingEffort,
 		maxTokens,
 		inputMessages: messages,
-		resolvedMessages,
-		visionModelId: visionResolution.visionModelId,
-		visionProxySource: visionResolution.visionProxySource,
-		visionStats: visionResolution.stats,
 	});
 
 	return {
@@ -167,8 +134,5 @@ export async function prepareChatRequest({
 		cacheDiagnostics: diagnosticsRun,
 		requestKind,
 		segment,
-		replayMarkerMetadata: visionResolution.replayMarkerMetadata,
-		visionMarkerTextChars: visionResolution.stats.markerVisionTextChars || undefined,
-		initialResponseNotice: visionResolution.initialResponseNotice,
 	};
 }

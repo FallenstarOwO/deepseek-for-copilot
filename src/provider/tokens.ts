@@ -43,15 +43,14 @@ function estimatePartTokens(part: unknown): PartTokenEstimate {
 		return { textChars, fixedTokens };
 	}
 
-	// 4. LanguageModelDataPart — use a capped heuristic because our model never
-	//    receives binary data directly. Images are resolved to text descriptions
-	//    by the vision pipeline; raw byteLength would massively overestimate.
+	// 4. LanguageModelDataPart — image parts are forwarded natively for image-capable
+	//    models; use a fixed token cost instead of raw byteLength, which would massively
+	//    overestimate.
 	if (part instanceof vscode.LanguageModelDataPart) {
 		const mime = part.mimeType;
 		if (mime === REPLAY_MARKER_MIME) {
-			// Marker metadata is not sent as assistant content. Its vision text belongs
-			// logically to a previous user image message, but provideTokenCount only
-			// receives one message at a time and cannot safely bind history here.
+			// Marker metadata is not assistant content; provideTokenCount sees one message
+			// at a time, so it contributes no text characters.
 			return { textChars: 0, fixedTokens: 0 };
 		}
 

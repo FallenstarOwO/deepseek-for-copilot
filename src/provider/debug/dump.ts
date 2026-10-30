@@ -19,7 +19,6 @@ import {
 } from '../routing';
 import type { ConversationSegment } from '../segment';
 import { ACTIVATE_TOOL_PREFIX } from '../tools/consts';
-import type { VisionProxySource, VisionResolutionStats } from '../vision';
 
 let dumpCounter = 0;
 let providerInputDumpCounter = 0;
@@ -29,7 +28,7 @@ const REQUEST_OBSERVATIONS_FILE = '_request-observations.jsonl';
 const HASH_WINDOW_CHARS = 2_048;
 
 type DumpEvent = 'provider-input' | 'deepseek-request';
-type DumpStage = 'provider-input' | 'input' | 'resolved';
+type DumpStage = 'provider-input' | 'input';
 
 interface DumpContext {
 	root: string;
@@ -46,7 +45,6 @@ interface ProviderInputDumpPaths {
 interface RequestDumpPaths {
 	directory: string;
 	input: string;
-	resolved: string;
 	request: string;
 	msg0?: string;
 }
@@ -104,11 +102,7 @@ export interface DumpDeepSeekRequestOptions {
 	thinkingEffort: string;
 	maxTokens: number | undefined;
 	inputMessages: readonly vscode.LanguageModelChatRequestMessage[];
-	resolvedMessages: readonly vscode.LanguageModelChatRequestMessage[];
 	requestOptions: vscode.ProvideLanguageModelChatResponseOptions;
-	visionModelId?: string;
-	visionProxySource?: VisionProxySource;
-	visionStats?: VisionResolutionStats;
 }
 
 export interface DumpProviderInputOptions {
@@ -176,7 +170,6 @@ export function dumpProviderInput(options: DumpProviderInputOptions): void {
  * Files land under `<dump root>/<conversationSegmentId>/` so marker replay and
  * cache-lineage changes are easy to inspect across provider calls:
  *   deepseek-request-<timestamp>-NNNN.input.json     — VS Code input snapshot
- *   deepseek-request-<timestamp>-NNNN.resolved.json  — post-vision VS Code snapshot
  *   deepseek-request-<timestamp>-NNNN.json           — full request body
  *   deepseek-request-<timestamp>-NNNN.msg0.txt       — messages[0] content (system prompt)
  */
@@ -205,14 +198,7 @@ export function dumpDeepSeekRequest(
 
 	enqueueDumpWrite(formatRequestLogLine(requestKind, 'requestDump'), async () => {
 		await mkdir(context.root, { recursive: true });
-		await writeJsonFile(
-			paths.input,
-			createPipelineSnapshot('input', request, options.inputMessages, options, context),
-		);
-		await writeJsonFile(
-			paths.resolved,
-			createPipelineSnapshot('resolved', request, options.resolvedMessages, options, context),
-		);
+		await writeJsonFile(paths.input, createPipelineSnapshot('input', request, options, context));
 
 		const requestJson = await writeJsonFile(paths.request, request, (value) =>
 			JSON.stringify(value, null, 2),
@@ -279,7 +265,6 @@ function createRequestDumpPaths(context: DumpContext, hasMsg0: boolean): Request
 	return {
 		directory: context.root,
 		input: join(context.root, `${context.basename}.input.json`),
-		resolved: join(context.root, `${context.basename}.resolved.json`),
 		request: join(context.root, `${context.basename}.json`),
 		msg0: hasMsg0 ? join(context.root, `${context.basename}.msg0.txt`) : undefined,
 	};
@@ -336,9 +321,8 @@ function createProviderInputSnapshot(
 }
 
 function createPipelineSnapshot(
-	stage: 'input' | 'resolved',
+	stage: 'input',
 	request: DeepSeekRequest,
-	messages: readonly vscode.LanguageModelChatRequestMessage[],
 	options: DumpDeepSeekRequestOptions,
 	context: DumpContext,
 ): object {
@@ -354,16 +338,8 @@ function createPipelineSnapshot(
 			thinkingEffort: options.thinkingEffort,
 			maxTokens: options.maxTokens ?? null,
 		},
-		vision:
-			stage === 'resolved'
-				? {
-						modelId: options.visionModelId ?? null,
-						source: options.visionProxySource ?? null,
-						stats: options.visionStats ?? null,
-					}
-				: undefined,
 		deepSeekPromptSummary: summarizeDeepSeekSystemPrompt(request.messages),
-		messages,
+		messages: options.inputMessages,
 		requestOptions: options.requestOptions,
 	});
 }
@@ -374,7 +350,6 @@ function createDumpSnapshot(options: {
 	segment: ConversationSegment;
 	requestKind: RequestKind;
 	model: object;
-	vision?: object;
 	deepSeekPromptSummary?: SystemPromptSummary;
 	messages: readonly vscode.LanguageModelChatRequestMessage[];
 	requestOptions: vscode.ProvideLanguageModelChatResponseOptions;
@@ -391,7 +366,6 @@ function createDumpSnapshot(options: {
 		model: options.model,
 		options: summarizeRequestOptions(options.requestOptions),
 		hostSettings: summarizeHostSettings(),
-		vision: options.vision,
 		systemPromptSummary: summarizeVscodeSystemPrompt(options.messages),
 		deepSeekPromptSummary: options.deepSeekPromptSummary,
 		messageStats: summarizeMessages(serializedMessages),
@@ -454,9 +428,6 @@ type SerializedContentPart =
 				segmentId?: string;
 				payloadFormat?: string;
 				legacySegmentOnly?: boolean;
-				visionTextChars?: number;
-				visionTextHash?: string;
-				visionTextIgnoredReason?: string;
 				reasoningTextChars?: number;
 				reasoningTextHash?: string;
 				reasoningTextIgnoredReason?: string;
@@ -571,9 +542,6 @@ function summarizeReplayMarker(marker: ReturnType<typeof parseReplayMarkerData>)
 	segmentId?: string;
 	payloadFormat?: string;
 	legacySegmentOnly?: boolean;
-	visionTextChars?: number;
-	visionTextHash?: string;
-	visionTextIgnoredReason?: string;
 	reasoningTextChars?: number;
 	reasoningTextHash?: string;
 	reasoningTextIgnoredReason?: string;
@@ -584,9 +552,6 @@ function summarizeReplayMarker(marker: ReturnType<typeof parseReplayMarkerData>)
 		segmentId: marker.segmentId,
 		payloadFormat: marker.payloadFormat,
 		legacySegmentOnly: marker.legacySegmentOnly,
-		visionTextChars: marker.visionText?.length,
-		visionTextHash: marker.visionText ? hashString(marker.visionText) : undefined,
-		visionTextIgnoredReason: marker.visionTextIgnoredReason,
 		reasoningTextChars: marker.reasoningText?.length,
 		reasoningTextHash: marker.reasoningText ? hashString(marker.reasoningText) : undefined,
 		reasoningTextIgnoredReason: marker.reasoningTextIgnoredReason,
@@ -1022,7 +987,7 @@ function logRequestDump(
 			`requestDump written: ${formatDumpSegment(options.segment)}` +
 				` ${formatModelFields(options.vscodeModelId, request.model)}` +
 				` request=${formatFileUri(paths.request)} ` +
-				`input=${formatFileUri(paths.input)} resolved=${formatFileUri(paths.resolved)} ` +
+				`input=${formatFileUri(paths.input)} ` +
 				`(${request.messages.length} msgs, ${request.tools?.length ?? 0} tools, ` +
 				`~${(requestJsonLength / 1024).toFixed(0)} KB) ` +
 				formatHostSettingsSummary(summarizeHostSettings()) +

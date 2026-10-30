@@ -15,7 +15,6 @@ import { resolveConversationSegment } from './segment';
 import { streamChatCompletion } from './stream';
 import { estimateTokenCount } from './tokens';
 import { processToolFlow } from './tools/flow';
-import { createVisionService } from './vision';
 
 /**
  * DeepSeek Chat Provider — implements vscode.LanguageModelChatProvider so
@@ -32,8 +31,6 @@ export class DeepSeekChatProvider implements vscode.LanguageModelChatProvider {
 
 	private readonly cacheDiagnostics = createCacheDiagnosticsRecorder();
 
-	/** Vision proxy: internal bridge + VS Code LM fallback. */
-	private readonly vision: ReturnType<typeof createVisionService>;
 	private readonly balanceCurrencyResolver: BalanceCurrencyResolver;
 	private readonly pricingRefreshScheduler: PricingRefreshScheduler;
 
@@ -47,7 +44,6 @@ export class DeepSeekChatProvider implements vscode.LanguageModelChatProvider {
 		this.authManager = new AuthManager(context);
 		this.globalStorageUri = context.globalStorageUri;
 		this.storageUri = context.storageUri;
-		this.vision = createVisionService(context);
 		this.balanceCurrencyResolver = new BalanceCurrencyResolver(context, this.authManager, () =>
 			this.onDidChangeLanguageModelChatInformationEmitter.fire(),
 		);
@@ -121,10 +117,6 @@ export class DeepSeekChatProvider implements vscode.LanguageModelChatProvider {
 			.finally(() => this.onDidChangeLanguageModelChatInformationEmitter.fire());
 	}
 
-	async setVisionModel(): Promise<void> {
-		await this.vision.openConfiguration();
-	}
-
 	// ---- LanguageModelChatProvider ----
 
 	async provideLanguageModelChatInformation(
@@ -190,19 +182,14 @@ export class DeepSeekChatProvider implements vscode.LanguageModelChatProvider {
 			segment,
 			messages: toolFlow.messages,
 			options,
-			token,
 			cacheDiagnostics: this.cacheDiagnostics,
-			getVisionDescriber: () => this.vision.get(),
 		});
 
 		return streamChatCompletion({
 			prepared,
 			progress,
 			token,
-			initialResponseNotice: joinInitialResponseNotices(
-				toolFlow.initialResponseNotice,
-				prepared.initialResponseNotice,
-			),
+			initialResponseNotice: toolFlow.initialResponseNotice,
 			getCharsPerToken: () => this.charsPerToken,
 			setCharsPerToken: (charsPerToken) => {
 				this.charsPerToken = charsPerToken;
@@ -217,9 +204,4 @@ export class DeepSeekChatProvider implements vscode.LanguageModelChatProvider {
 	): Promise<number> {
 		return estimateTokenCount(text, this.charsPerToken);
 	}
-}
-
-function joinInitialResponseNotices(...notices: (string | undefined)[]): string | undefined {
-	const joined = notices.filter((notice) => notice && notice.trim().length > 0).join('\n');
-	return joined || undefined;
 }

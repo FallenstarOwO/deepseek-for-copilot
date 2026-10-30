@@ -17,8 +17,7 @@
 
 ## 代码约定
 
-- 模型注册表在 [src/consts.ts](../src/consts.ts) 的 `MODELS`。`deepseek-v4-flash` 与 `deepseek-v4-flash-vision-exp` 已移除（官方 API 早把旧 ID 路由到 V4.1 Flash），不要再加回。
-- Vision Proxy 自动模式的默认模型是 `deepseek-flash`（[src/provider/vision/consts.ts](../src/provider/vision/consts.ts) 的 `DEFAULT_VISION_MODEL_ID`），V4 Pro 走代理。改这个默认值要同步 `package.nls*.json`、README 与 `src/i18n.ts`。
+- 模型注册表在 [src/consts.ts](../src/consts.ts) 的 `MODELS`。`deepseek-v4-flash` 与旧的视觉实验模型 ID 已移除（官方 API 早把旧 ID 路由到 V4.1 Flash），不要再加回。
 - 扩展在激活阶段同步注册 provider，等 Copilot Chat 激活完成后再刷新模型列表（[src/runtime/provider.ts](../src/runtime/provider.ts)）。不要改回 `await activate()`，那会复现上游 #274 的激活死锁。
 - 校验命令：`npm run compile`、`npm run lint`、`npm run package`。`package` 的 `vscode:prepublish` 依赖 bash，Windows 下需把 `C:\Program Files\Git\bin` 加入 PATH。`npm run format:check` 在本地 Windows 检出上会因 CRLF 全仓失败（属历史基线，CI 上正常），不作为本地门禁。
 

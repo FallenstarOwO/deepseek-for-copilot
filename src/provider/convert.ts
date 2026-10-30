@@ -7,11 +7,8 @@ import type {
 	DeepSeekToolCall,
 } from '../types';
 import { parseFirstReplayMarker } from './replay';
-import {
-	isImageDataPart,
-	normalizeToolResult,
-	type NormalizedToolResult,
-} from './vision/normalize';
+
+const IMAGE_OMITTED_NOTICE = '[Image omitted: the selected model does not support image input]';
 
 /**
  * Convert VS Code chat messages to DeepSeek format.
@@ -20,7 +17,7 @@ import {
 export function convertMessages(
 	messages: readonly vscode.LanguageModelChatRequestMessage[],
 	isThinkingModel: boolean,
-	nativeImageInput: boolean,
+	imageInput: boolean,
 ): DeepSeekMessage[] {
 	const result: DeepSeekMessage[] = [];
 
@@ -35,20 +32,27 @@ export function convertMessages(
 
 		for (const part of message.content) {
 			if (part instanceof vscode.LanguageModelTextPart) {
+				if (content.endsWith(IMAGE_OMITTED_NOTICE)) {
+					content += '\n';
+				}
 				content += part.value;
-				if (nativeImageInput && role === 'user') {
+				if (imageInput && role === 'user') {
 					nativeVisionContentParts.push({
 						type: 'text',
 						text: part.value,
 					});
 				}
-			} else if (nativeImageInput && role === 'user' && isImageDataPart(part)) {
+			} else if (imageInput && role === 'user' && isImageDataPart(part)) {
 				nativeVisionContentParts.push({
 					type: 'image_url',
 					image_url: {
 						url: toImageDataUrl(part),
 					},
 				});
+			} else if (!imageInput && role === 'user' && isImageDataPart(part)) {
+				// Text-only models cannot receive the image bytes; keep a visible
+				// placeholder so the user message itself is not dropped.
+				content += (content ? '\n' : '') + IMAGE_OMITTED_NOTICE;
 			} else if (isLanguageModelThinkingPart(part)) {
 				thinkingContent += normalizeThinkingPartText(part.value);
 			} else if (part instanceof vscode.LanguageModelToolCallPart) {
@@ -84,7 +88,7 @@ export function convertMessages(
 				result.push(msg);
 			}
 		} else {
-			if (nativeImageInput && role === 'user' && nativeVisionContentParts.length > 0) {
+			if (imageInput && role === 'user' && nativeVisionContentParts.length > 0) {
 				result.push({
 					role: 'user',
 					content: nativeVisionContentParts,
@@ -101,7 +105,7 @@ export function convertMessages(
 		for (const tr of toolResults) {
 			result.push({
 				role: 'tool',
-				content: convertToolResultContent(tr, nativeImageInput),
+				content: convertToolResultContent(tr, imageInput),
 				tool_call_id: tr.callId,
 			});
 		}
@@ -116,23 +120,34 @@ function toImageDataUrl(part: { mimeType: string; data: Uint8Array }): string {
 
 function convertToolResultContent(
 	toolResult: NormalizedToolResult,
-	nativeImageInput: boolean,
+	imageInput: boolean,
 ): DeepSeekMessage['content'] {
 	const hasImages = toolResult.parts.some((part) => part.type === 'image');
-	if (!nativeImageInput || !hasImages) {
+	if (!imageInput || !hasImages) {
 		const text = toolResult.parts
 			.filter((part) => part.type === 'text')
 			.map((part) => part.text)
 			.join('');
+		if (!imageInput && hasImages) {
+			// Tool messages must never carry empty content: append the omission notice
+			// to whatever text survives, or emit the notice on its own.
+			if (text) {
+				return `${text}\n${IMAGE_OMITTED_NOTICE}`;
+			}
+			const fallbackContent = toolResult.parts
+				.filter((part) => part.type === 'other')
+				.map((part) => part.value);
+			return fallbackContent.length > 0
+				? `${safeStringify(fallbackContent)}\n${IMAGE_OMITTED_NOTICE}`
+				: IMAGE_OMITTED_NOTICE;
+		}
 		if (text) {
 			return text;
 		}
 
-		// Do not stringify image bytes into a text-only model request. Preserve the
-		// existing fallback for genuinely non-image tool-result content.
-		const fallbackContent = hasImages
-			? toolResult.parts.filter((part) => part.type === 'other').map((part) => part.value)
-			: toolResult.originalContent;
+		// Image bytes never enter a text-only model request; genuinely non-image
+		// tool-result content keeps the original fallback serialization.
+		const fallbackContent = toolResult.originalContent;
 		return fallbackContent.length > 0 ? safeStringify(fallbackContent) : '';
 	}
 
@@ -240,4 +255,79 @@ function getMessageContentChars(content: DeepSeekMessage['content']): number {
 		}
 	}
 	return total;
+}
+
+/** Whether any converted message forwards an image part to the API. */
+export function hasImageParts(messages: DeepSeekMessage[]): boolean {
+	for (const msg of messages) {
+		const content = msg.content;
+		if (typeof content === 'string') {
+			continue;
+		}
+
+		for (const part of content) {
+			if (part.type === 'image_url') {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+export type NormalizedToolResultContentPart =
+	| {
+			type: 'text';
+			text: string;
+	  }
+	| {
+			type: 'image';
+			mimeType: string;
+			data: Uint8Array;
+	  }
+	| {
+			type: 'other';
+			value: unknown;
+	  };
+
+export interface NormalizedToolResult {
+	callId: string;
+	parts: NormalizedToolResultContentPart[];
+	originalContent: readonly unknown[];
+}
+
+/**
+ * Normalize a tool result without making any model-routing decisions.
+ *
+ * Only actual image data parts are classified as images. Tool names, tool-call
+ * input paths, resource URIs, and other opaque values are deliberately not
+ * inspected or hydrated here.
+ */
+export function normalizeToolResult(
+	part: vscode.LanguageModelToolResultPart,
+): NormalizedToolResult {
+	return {
+		callId: part.callId,
+		parts: part.content.map(normalizeToolResultContentPart),
+		originalContent: part.content,
+	};
+}
+
+export function isImageDataPart(part: unknown): part is vscode.LanguageModelDataPart {
+	return (
+		part instanceof vscode.LanguageModelDataPart && part.mimeType.toLowerCase().startsWith('image/')
+	);
+}
+
+function normalizeToolResultContentPart(item: unknown): NormalizedToolResultContentPart {
+	if (item instanceof vscode.LanguageModelTextPart) {
+		return { type: 'text', text: item.value };
+	}
+	if (isImageDataPart(item)) {
+		return {
+			type: 'image',
+			mimeType: item.mimeType,
+			data: item.data,
+		};
+	}
+	return { type: 'other', value: item };
 }
