@@ -1,6 +1,6 @@
 name: Release
 
-# Open VSX trusts one workflow filename, so automatic and rescue publishing live here.
+# Automatic and rescue publishing live in one workflow file.
 #
 # The VS Code Marketplace publish uses Trusted Publishing (GitHub OIDC), so no PAT
 # is stored. The policy in the Marketplace publisher admin must match this workflow:
@@ -8,7 +8,6 @@ name: Release
 #   Repository:       deepseek-for-copilot
 #   Workflow:         release.yml
 #   Environment:      production
-# Open VSX still uses the optional OVSX_PAT secret; the step is skipped when unset.
 
 on:
   push:
@@ -22,11 +21,6 @@ on:
         type: string
       publish_vscode_marketplace:
         description: Publish this tag to the VS Code Marketplace.
-        required: false
-        type: boolean
-        default: true
-      publish_open_vsx:
-        description: Publish this tag to Open VSX.
         required: false
         type: boolean
         default: true
@@ -70,8 +64,6 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    env:
-      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4.4.0
         with:
@@ -103,10 +95,6 @@ jobs:
         if: vars.PUBLISH_VSCODE_MARKETPLACE != 'false'
         run: npm exec -- vsce publish --oidc --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
 
-      - name: Publish to Open VSX
-        if: vars.PUBLISH_OPEN_VSX != 'false' && env.OVSX_PAT != ''
-        run: npm exec -- ovsx publish --skip-duplicate "${{ steps.vsix.outputs.path }}"
-
       - name: Attach VSIX to GitHub Release
         uses: softprops/action-gh-release@v2.6.2
         with:
@@ -128,8 +116,6 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    env:
-      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4.4.0
         with:
@@ -178,10 +164,6 @@ jobs:
       - name: Publish to VS Code Marketplace
         if: inputs.publish_vscode_marketplace == true
         run: npm exec --yes --package=@vscode/vsce@4.1.0 -- vsce publish --oidc --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
-
-      - name: Publish to Open VSX
-        if: inputs.publish_open_vsx == true && env.OVSX_PAT != ''
-        run: npm exec --yes --package=ovsx@1.2.0 -- ovsx publish --skip-duplicate "${{ steps.vsix.outputs.path }}"
 
       - name: Attach VSIX to GitHub Release
         if: inputs.attach_github_release == true
