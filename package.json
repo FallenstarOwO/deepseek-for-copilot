@@ -3,7 +3,7 @@
   "displayName": "DeepSeek for Copilot Chat (Community Fork)",
   "description": "Use DeepSeek V4.1 Flash in Copilot Chat with native vision, reasoning, and agent tools.",
   "icon": "resources/icon.png",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "fallenstarowo",
   "license": "MIT",
   "repository": {

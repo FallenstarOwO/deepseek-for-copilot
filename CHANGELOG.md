@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.0.0...v1.1.0) (2026-10-30)
+
+
+### Features
+
+* **provider:** drop the V4 Pro vision proxy module ([51439c5](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/51439c5cf121efe4a934c967a2eabc2307468350))
+
+
+### Documentation
+
+* record the fork's release pipeline and marketplace constraints ([b0d821a](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/b0d821a278812290fe0c21ea8f3dfaa7ee25b639))
+
 ## [1.0.0](https://github.com/FallenstarOwO/deepseek-for-copilot/releases/tag/v1.0.0) (2026-10-29)
 
 First release of this community fork, based on upstream 0.9.4.
