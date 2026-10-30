@@ -1,6 +1,14 @@
 name: Release
 
 # Open VSX trusts one workflow filename, so automatic and rescue publishing live here.
+#
+# The VS Code Marketplace publish uses Trusted Publishing (GitHub OIDC), so no PAT
+# is stored. The policy in the Marketplace publisher admin must match this workflow:
+#   Repository owner: FallenstarOwO
+#   Repository:       deepseek-for-copilot
+#   Workflow:         release.yml
+#   Environment:      production
+# Open VSX still uses the optional OVSX_PAT secret; the step is skipped when unset.
 
 on:
   push:
@@ -61,8 +69,8 @@ jobs:
       cancel-in-progress: false
     permissions:
       contents: write
+      id-token: write
     env:
-      VSCE_PAT: ${{ secrets.VSCE_PAT }}
       OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4.4.0
@@ -91,16 +99,9 @@ jobs:
           fi
           echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
 
-      - name: Verify publish credentials
-        run: |
-          if [ -z "${VSCE_PAT}" ] && [ -z "${OVSX_PAT}" ]; then
-            echo "Neither VSCE_PAT nor OVSX_PAT is configured; refusing to publish." >&2
-            exit 1
-          fi
-
       - name: Publish to VS Code Marketplace
-        if: vars.PUBLISH_VSCODE_MARKETPLACE != 'false' && env.VSCE_PAT != ''
-        run: npm exec -- vsce publish --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
+        if: vars.PUBLISH_VSCODE_MARKETPLACE != 'false'
+        run: npm exec -- vsce publish --oidc --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
 
       - name: Publish to Open VSX
         if: vars.PUBLISH_OPEN_VSX != 'false' && env.OVSX_PAT != ''
@@ -126,8 +127,8 @@ jobs:
       cancel-in-progress: false
     permissions:
       contents: write
+      id-token: write
     env:
-      VSCE_PAT: ${{ secrets.VSCE_PAT }}
       OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4.4.0
@@ -174,16 +175,9 @@ jobs:
           fi
           echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
 
-      - name: Verify publish credentials
-        run: |
-          if [ -z "${VSCE_PAT}" ] && [ -z "${OVSX_PAT}" ]; then
-            echo "Neither VSCE_PAT nor OVSX_PAT is configured; refusing to publish." >&2
-            exit 1
-          fi
-
       - name: Publish to VS Code Marketplace
-        if: inputs.publish_vscode_marketplace == true && env.VSCE_PAT != ''
-        run: npm exec --yes --package=@vscode/vsce@4.0.0 -- vsce publish --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
+        if: inputs.publish_vscode_marketplace == true
+        run: npm exec --yes --package=@vscode/vsce@4.1.0 -- vsce publish --oidc --packagePath "${{ steps.vsix.outputs.path }}" --skip-duplicate
 
       - name: Publish to Open VSX
         if: inputs.publish_open_vsx == true && env.OVSX_PAT != ''
