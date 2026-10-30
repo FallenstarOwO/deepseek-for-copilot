@@ -1,13 +1,13 @@
-<h1 align="center">DeepSeek for Copilot</h1>
+<h1 align="center">DeepSeek for Copilot Chat (Community Fork)</h1>
 
 <p align="center">
   <!-- marketplace-readme:remove-start -->
-  <a href="https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot"><img src="https://img.shields.io/badge/VS%20Code%20Marketplace-Install-007ACC?logo=visualstudiocode&logoColor=white&style=for-the-badge" alt="Install from VS Code Marketplace"></a>
-  <a href="https://open-vsx.org/extension/fallenstarowo/deepseek-for-copilot"><img src="https://img.shields.io/badge/Open%20VSX-Install-6A4FB6?style=for-the-badge" alt="Install from Open VSX"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat"><img src="https://img.shields.io/badge/VS%20Code%20Marketplace-Install-007ACC?logo=visualstudiocode&logoColor=white&style=for-the-badge" alt="Install from VS Code Marketplace"></a>
+  <a href="https://open-vsx.org/extension/fallenstarowo/deepseek-for-copilot-chat"><img src="https://img.shields.io/badge/Open%20VSX-Install-6A4FB6?style=for-the-badge" alt="Install from Open VSX"></a>
   <br/>
   <!-- marketplace-readme:remove-end -->
   <img src="https://img.shields.io/github/v/release/FallenstarOwO/deepseek-for-copilot?style=for-the-badge&label=Version" alt="Version" />
-  <img src="https://vsmarketplacebadges.dev/installs-short/fallenstarowo.deepseek-for-copilot.svg?style=for-the-badge" alt="Installs" />
+  <img src="https://vsmarketplacebadges.dev/installs-short/fallenstarowo.deepseek-for-copilot-chat.svg?style=for-the-badge" alt="Installs" />
 </p>
 
 <p align="center">
@@ -95,8 +95,8 @@ Pure VS Code API + Node.js built-ins. No Python, no Docker, no local proxy serve
 
 Install from the registry used by your editor:
 
-1. **Microsoft VS Code** — install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot).
-2. **Editors that use Open VSX** — install from [Open VSX](https://open-vsx.org/extension/fallenstarowo/deepseek-for-copilot).
+1. **Microsoft VS Code** — install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat).
+2. **Editors that use Open VSX** — install from [Open VSX](https://open-vsx.org/extension/fallenstarowo/deepseek-for-copilot-chat).
 
 ### Usage
 

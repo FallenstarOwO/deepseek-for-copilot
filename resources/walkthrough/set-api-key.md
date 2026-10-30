@@ -1,4 +1,4 @@
-DeepSeek V4 for Copilot Chat uses your own DeepSeek API key to make Flash and Pro available in the model picker.
+DeepSeek for Copilot Chat (Community Fork) uses your own DeepSeek API key to make Flash and Pro available in the model picker.
 
 Paste it once, then update or remove it later from the Command Palette.
 

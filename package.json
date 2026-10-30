@@ -1,6 +1,6 @@
 {
-  "name": "deepseek-for-copilot",
-  "displayName": "DeepSeek for Copilot",
+  "name": "deepseek-for-copilot-chat",
+  "displayName": "DeepSeek for Copilot Chat (Community Fork)",
   "description": "Use DeepSeek V4.1 Flash in Copilot Chat with native vision, Vision Proxy, reasoning, and agent tools.",
   "icon": "resources/icon.png",
   "version": "1.0.0",

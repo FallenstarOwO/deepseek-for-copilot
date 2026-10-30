@@ -16,7 +16,7 @@ First release of this community fork, based on upstream 0.9.4.
 
 ### Miscellaneous
 
-* **fork:** publish independently as `fallenstarowo.deepseek-for-copilot` with its own release pipeline
+* **fork:** publish independently as `fallenstarowo.deepseek-for-copilot-chat` with its own release pipeline
 
 ## [0.9.4](https://github.com/Vizards/deepseek-v4-for-copilot/compare/v0.9.3...v0.9.4) (2026-10-07)
 
