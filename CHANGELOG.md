@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.0...v1.1.1) (2026-11-05)
+
+
+### Bug Fixes
+
+* **provider:** prevent fragmented thinking blocks ([#304](https://github.com/Vizards/deepseek-v4-for-copilot/issues/304)) ([b7c9527](https://github.com/Vizards/deepseek-v4-for-copilot/commit/b7c9527b704522493d553b1672d67881ed8ad017)), closes [#303](https://github.com/Vizards/deepseek-v4-for-copilot/issues/303)
+
 ## [1.1.0](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.0.0...v1.1.0) (2026-10-30)
 
 
