@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.1...v1.1.2) (2026-11-06)
+
+
+### Documentation
+
+* **readme:** make Chinese the primary README ([d69859b](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/d69859bf7f30e45d7d5cfdb54c008f0f7103fdf2))
+
 ## [1.1.1](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.0...v1.1.1) (2026-11-05)
 
 
