@@ -12,6 +12,7 @@
 - Marketplace 侧的策略必须与 workflow 精确匹配，任一字段不符即 token exchange 失败：Repository owner `FallenstarOwO`、Repository `deepseek-for-copilot`、Workflow `release.yml`、Environment `production`。两个发布 job 都声明了 `environment: production`，改 workflow 时不要顺手删掉。
 - 发布流程：`feat`/`fix` 提交进 `main` → release-please 开 release PR → 合并后自动打 tag → `publish` job 上传 Marketplace 并把 VSIX 附到 GitHub Release。`workflow_dispatch` 是手动救援入口，必填 `tag_name`。
 - **Open VSX 已下线**：徽章、安装说明、`ovsx` 依赖与 workflow 步骤均已移除，不要再加回。
+- **README 语言分工**：`README.md` 是中文主文档，同时是 Marketplace 概览页的源文件——[prepare-marketplace-readme.sh](./scripts/prepare-marketplace-readme.sh) 只处理它，且要求其中恰好有一个 `marketplace-readme:remove-start/end` 块。英文全文在 `README.en.md`，`README.zh-cn.md` 仅为兼容旧链接保留的跳转占位。三份 README 都必须在 `.vscodeignore` 中排除，新增语言版本时同步补上。
 - **扩展名必须全局唯一**。Marketplace 的 `name` 不是发布者内唯一，`deepseek-for-copilot` 已被他人占用，displayName 也需与既有扩展拉开差距（`(Community Fork)` 后缀是过审的有效形式）。改名时同步 `package-lock.json`、`src/consts.ts` 的 `WALKTHROUGH_ID`、README 徽章与安装链接、`package.nls*.json` 与 walkthrough 文案。
 - 仓库 Settings 必须保持 **Allow GitHub Actions to create and approve pull requests** 开启，否则 release-please 无法开 release PR。
 

@@ -1,6 +1,7 @@
 .vscode/**
 README.md
 README.zh-cn.md
+README.en.md
 src/**
 out/**/*.map
 out/**/*.d.ts

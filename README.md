@@ -2,124 +2,126 @@
 
 <p align="center">
   <!-- marketplace-readme:remove-start -->
-  <a href="https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat"><img src="https://img.shields.io/badge/VS%20Code%20Marketplace-Install-007ACC?logo=visualstudiocode&logoColor=white&style=for-the-badge" alt="Install from VS Code Marketplace"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat"><img src="https://img.shields.io/badge/VS%20Code%20Marketplace-Install-007ACC?logo=visualstudiocode&logoColor=white&style=for-the-badge" alt="从 VS Code Marketplace 安装"></a>
   <br/>
   <!-- marketplace-readme:remove-end -->
-  <img src="https://img.shields.io/github/v/release/FallenstarOwO/deepseek-for-copilot?style=for-the-badge&label=Version" alt="Version" />
-  <img src="https://vsmarketplacebadges.dev/installs-short/fallenstarowo.deepseek-for-copilot-chat.svg?style=for-the-badge" alt="Installs" />
+  <img src="https://img.shields.io/github/v/release/FallenstarOwO/deepseek-for-copilot?style=for-the-badge&label=Version" alt="版本" />
+  <img src="https://vsmarketplacebadges.dev/installs-short/fallenstarowo.deepseek-for-copilot-chat.svg?style=for-the-badge" alt="安装量" />
 </p>
 
 <p align="center">
-  English |
-  <a href="https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.zh-cn.md">简体中文</a>
+  简体中文 |
+  <a href="https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.en.md">English</a>
 </p>
 
-**Pick DeepSeek V4 from the Copilot Chat model picker — and keep everything else Copilot already gives you.**
+**在 Copilot Chat 模型选择器中直接使用 DeepSeek V4——无需离开你熟悉的 Copilot 工作流。**
 
-> **Unofficial community fork.** Published by `fallenstarowo` from [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot). Not affiliated with or endorsed by the original author of [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot); the MIT license and original copyright notices are retained. Both extensions register the same `deepseek` model vendor, so **uninstall the official extension before installing this one**.
+> **English summary:** Pick DeepSeek V4 from the Copilot Chat model picker and keep everything Copilot already gives you — agent mode, tool calling, skills, and native vision. You bring your own DeepSeek API key, stored in the OS keychain. [Read the English README →](https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.en.md)
+
+> **非官方社区分支。** 由 `fallenstarowo` 从 [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot) 发布，与原作者 [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot) 无隶属或背书关系；MIT 许可证与原始版权声明均予保留。两个扩展注册同一个 `deepseek` 模型 vendor，**安装本扩展前请先卸载官方版本**。
 
 <p align="center">
-  <img src="resources/screenshots/01-picker.png" alt="The DeepSeek group in the Copilot Chat model picker, listing DeepSeek V4 Pro and DeepSeek V4.1 Flash with the Max 1M thinking effort" width="798">
+  <img src="resources/screenshots/01-picker.png" alt="Copilot Chat 模型选择器中的 DeepSeek 分组，列出 DeepSeek V4 Pro 与 DeepSeek V4.1 Flash，并显示「最大值 · Max 1M」思考深度" width="798">
 </p>
 
-Love DeepSeek's price-performance but don't want to give up GitHub Copilot's agent mode, tool calling, and polished UI? This extension adds **DeepSeek V4.1 Flash and other DeepSeek models** to the Copilot Chat model selector — with **native vision**, **thinking mode**, and your own API key.
+喜欢 DeepSeek 的性价比，但不想放弃 GitHub Copilot 的 Agent 模式、工具调用和成熟的交互体验？本扩展将 **DeepSeek V4.1 Flash 等模型**直接接入 Copilot Chat 模型选择器，支持**原生视觉**、**思考模式**，并使用你自己的 API Key。
 
-## Why this extension?
+## 为什么选这个扩展？
 
-- **Don't replace Copilot — power it up.** No new sidebar, no new chat UI to learn. Just a new model in the picker you already use.
-- **Agent mode, tool calling, instructions, MCP, skills — all of it still works.** Copilot's entire stack, now running on DeepSeek.
-- **Native image input.** V4.1 Flash receives image attachments natively; V4 Pro is text-only.
-- **BYOK, pay DeepSeek directly.** Your API key, your bill, your rate limits. Stored in the OS keychain, never on disk.
+- **不是替换 Copilot，而是增强它。** 没有新的侧边栏，没有新的聊天界面需要学习。只是在你已经在用的模型选择器中多了一个选项。
+- **Agent 模式、工具调用、Instructions、MCP、Skills——全部正常运作。** Copilot 的完整能力栈，现在跑在 DeepSeek 上。
+- **原生图片输入。** V4.1 Flash 原生接收图片附件；V4 Pro 仅支持文本输入。
+- **需自行提供 API Key，直接向 DeepSeek 付费。** 你的 API Key，你的账单，你的速率限制。密钥存储在操作系统密钥链中，不会以明文形式写入磁盘。
 
-## Features
+## 功能特性
 
-### DeepSeek models in the model picker
-The picker includes V4.1 Flash and V4 Pro, with long context, tool calling, and configurable thinking effort.
+### DeepSeek 模型出现在模型选择器中
+选择器包含 V4.1 Flash 和 V4 Pro，支持长上下文、工具调用和可配置的思考强度。
 
-### Native Vision
-**DeepSeek V4.1 Flash** handles image attachments natively: images are sent to the API together with the conversation. **DeepSeek V4 Pro** does not accept image input and works with text only.
+### 原生视觉
+**DeepSeek V4.1 Flash** 原生处理图片附件：图片附件会随对话内容一起直接发送给 API。**DeepSeek V4 Pro** 不支持图片输入，仅处理文本。
 
-[Context caching](https://api-docs.deepseek.com/guides/kv_cache/) requires a full match with a cached prefix.
+[上下文缓存](https://api-docs.deepseek.com/zh-cn/guides/kv_cache/)命中需要完整匹配已有的缓存前缀。
 
-### Thinking Mode and Effort Control
-Supports DeepSeek's thinking mode and `reasoning_content`. `none` disables thinking mode; `low`, `high` (default), and `max` set the thinking effort.
+### 思考模式与思考强度控制
+支持 DeepSeek 的思考模式和 `reasoning_content`。`停用`关闭思考模式；开启后可选择`轻量`（`low`）、`标准`（`high`，默认）或`深度`（`max`）。
 
-### Inherits Every Copilot Capability
-Because this plugs into Copilot's native provider API, you get the full stack for free:
-- **Agent mode** — autonomous multi-step tasks
-- **Tool calling** — file edits, terminal, workspace search, Git, tests
-- **Instructions & skills** — all your `.instructions.md`, `AGENTS.md`, and skills just work
-- **Prompt caching stats** — DeepSeek's cache hit rate logged in the output channel so you can see the savings
+### 继承全部 Copilot 能力
+由于本扩展接入的是 Copilot 的原生 provider API，你免费获得完整能力栈：
+- **Agent 模式**——自主执行多步骤任务
+- **工具调用**——文件编辑、终端操作、工作区搜索、Git、测试
+- **Instructions & Skills**——你的 `.instructions.md`、`AGENTS.md` 和各项 Skills 开箱即用
+- **Prompt 缓存统计**——在输出通道中记录 DeepSeek 缓存命中率，直观看到成本节省
 
 <p align="center">
-  <img src="resources/screenshots/04-agent.png" alt="DeepSeek V4 Pro running Copilot's agent mode with tool calls" width="800">
+  <img src="resources/screenshots/04-agent.png" alt="DeepSeek V4 Pro 运行 Copilot 的 Agent 模式，执行工具调用" width="800">
 </p>
 
-### Web Search and Fetch
-Two built-in tools plug Copilot Chat into the official [DeepSeek Search and Fetch APIs](https://api-docs.deepseek.com/guides/search):
+### 官方网页搜索与抓取
+两个内置工具将 Copilot Chat 接入 [DeepSeek 官方 Search / Fetch API](https://api-docs.deepseek.com/zh-cn/guides/search)：
 
-- **`deepseek_web_search`** — ranked web results with title, URL, date, site name, summary, and more. Inline reference: `#deepseekSearch`.
-- **`deepseek_web_fetch`** — fetches one page and returns clean Markdown. Inline reference: `#deepseekFetch`.
+- **`deepseek_web_search`**——返回按相关性排序的网页结果，含标题、URL、日期、站点名、摘要等。行内引用：`#deepseekSearch`。
+- **`deepseek_web_fetch`**——抓取单个网页并返回 Markdown 正文。行内引用：`#deepseekFetch`。
 
-In agent mode the model calls them automatically when a task needs fresh web information. You can also add them via the chat tools picker, or mention `#deepseekSearch` / `#deepseekFetch` explicitly. Both APIs bill per successful request — see the [official docs](https://api-docs.deepseek.com/guides/search) and the [pricing page](https://api-docs.deepseek.com/quick_start/pricing) for current rates.
+Agent 模式下，模型会在任务需要最新网络信息时自动调用；你也可以通过聊天工具选择器添加，或在提示词中显式写 `#deepseekSearch` / `#deepseekFetch`。两个 API 均按成功请求计费——当前费率请以[官方文档](https://api-docs.deepseek.com/zh-cn/guides/search)与[价格页](https://api-docs.deepseek.com/zh-cn/quick_start/pricing)为准。
 
-Notes:
-- Each tool can be disabled independently in Settings (search for `webTools`; keys: `webTools.search.enabled` / `webTools.fetch.enabled`). Disabled tools are hidden from Copilot Chat and cannot be called.
-- When `deepseek-copilot.baseUrl` is customized, the target service must implement `POST /v1/tools/search` and `POST /v1/tools/fetch`.
-- These standalone tools work with every DeepSeek model in this extension. The Responses API's built-in `web_search` tool is only available on `deepseek-v4-pro` and requires switching the whole chat protocol to `/responses`, which this extension does not do.
-- The tools always use your configured DeepSeek API key, even when another chat model is selected.
+说明：
+- 可在设置中搜索 `webTools` 分别关闭搜索或抓取（`webTools.search.enabled` / `webTools.fetch.enabled`）。关闭后工具会从 Copilot Chat 工具列表中隐藏，无法被调用。
+- 自定义 `deepseek-copilot.baseUrl` 时，目标服务需实现 `POST /v1/tools/search` 与 `POST /v1/tools/fetch`。
+- 这两个独立工具适用于本扩展的全部 DeepSeek 模型。Responses API 内置的 `web_search` 工具仅 `deepseek-v4-pro` 支持，且需要将整条对话协议切换到 `/responses`，本扩展未采用该方案。
+- 无论当前选择哪个聊天模型，这两个工具都会使用你配置的 DeepSeek API Key。
 
-### Secure by Default
-API key lives in VS Code's `SecretStorage` (OS keychain on macOS / Windows / Linux). Never in `settings.json`, never in your Git history.
+### 安全优先
+API Key 存储在 VS Code 的 `SecretStorage` 中（macOS 钥匙串 / Windows 凭据管理器 / Linux 密钥环）。绝不会出现在 `settings.json` 中，也不会被提交到 Git 历史。
 
-### Zero Runtime Dependencies
-Pure VS Code API + Node.js built-ins. No Python, no Docker, no local proxy server to babysit.
+### 零运行时依赖
+纯 VS Code API + Node.js 内置模块。无需 Python、Docker 或本地代理进程。
 
-## Getting Started
+## 快速开始
 
-### Prerequisites
+### 前置条件
 
-- VS Code 1.116 or later. This extension relies on non-public Copilot Chat APIs that may break on newer VS Code versions — [report an issue](https://github.com/FallenstarOwO/deepseek-for-copilot/issues) if you hit one.
-- GitHub Copilot subscription (Free / Pro / Enterprise — the free tier works)
-- DeepSeek API key from [platform.deepseek.com](https://platform.deepseek.com), or a compatible provider token when using a custom `deepseek-copilot.baseUrl`
+- VS Code 1.116 及以上版本。本扩展依赖非公开的 Copilot Chat API，较新的 VS Code 版本可能存在兼容性问题——如遇到请[提交 Issue](https://github.com/FallenstarOwO/deepseek-for-copilot/issues)。
+- GitHub Copilot 订阅（Free / Pro / Enterprise——免费版即可使用）
+- DeepSeek API Key，从 [platform.deepseek.com](https://platform.deepseek.com) 获取；使用自定义 `deepseek-copilot.baseUrl` 时也可使用兼容的 provider token
 
-### Installation
+### 安装方式
 
-Install it in one of these ways:
+以下任选一种方式安装：
 
-1. **Microsoft VS Code** — install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat).
-2. **Manual install** — download the `.vsix` from [GitHub Releases](https://github.com/FallenstarOwO/deepseek-for-copilot/releases) and use **Install from VSIX...** in the Extensions view.
+1. **Microsoft VS Code** — 从 [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat) 安装。
+2. **手动安装** — 从 [GitHub Releases](https://github.com/FallenstarOwO/deepseek-for-copilot/releases) 下载 `.vsix`，在扩展视图里使用 **从 VSIX 安装...**。
 
-### Usage
+### 使用步骤
 
-1. Run **DeepSeek: Set API Key** from the Command Palette (`Cmd+Shift+P`)
-2. Paste your key or compatible provider token (official DeepSeek keys usually start with `sk-`)
-3. Open Copilot Chat, click the model picker, and choose **DeepSeek V4.1 Flash** or **DeepSeek V4 Pro**
-4. That's it — chat away
+1. 通过命令面板（`Cmd+Shift+P`）运行 **DeepSeek: 设置 API Key**
+2. 粘贴你的 Key 或兼容的 provider token（官方 DeepSeek Key 通常以 `sk-` 开头）
+3. 打开 Copilot Chat，点击模型选择器，选择 **DeepSeek V4.1 Flash** 或 **DeepSeek V4 Pro**
+4. 搞定——开始聊天
 
-## Models
+## 模型
 
-| Model Entry | Image Handling | Thinking Effort | Official API Status |
+| 模型入口 | 图片处理 | 思考强度 | 官方 API 状态 |
 |---|---|---|---|
-| **DeepSeek V4.1 Flash** | Native image input | `none` / `low` / `high` / `max` | Available via `deepseek-flash` |
-| **DeepSeek V4 Pro** | Text only (no image input) | `none` / `low` / `high` / `max` | API services continue; billing method unchanged |
+| **DeepSeek V4.1 Flash** | 原生图片输入 | `停用` / `轻量` / `标准` / `深度` | 使用模型名 `deepseek-flash` 调用 |
+| **DeepSeek V4 Pro** | 仅文本（不支持图片输入） | `停用` / `轻量` / `标准` / `深度` | 继续提供 API 调用服务，计费方式保持不变 |
 
-Both entries support thinking mode, tool calling, and 1M token context. See the official [Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) documentation for billing details.
+两个入口均支持思考模式、工具调用和 1M Token 上下文。计费说明见[模型与价格文档](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)。
 
-## Settings
+## 设置项
 
-| Setting | Default | Description |
+| 设置项 | 默认值 | 说明 |
 |---|---|---|
-| `deepseek-copilot.baseUrl` | `https://api.deepseek.com` | API endpoint — change for self-hosted / proxied deployments |
-| `deepseek-copilot.requestHeaders` | `{}` | Custom headers for chat completions. [Configuration guide](https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/docs/settings/request-headers.en.md) |
-| `deepseek-copilot.maxTokens` | `0` | Max output tokens (`0` = API default). Useful for cost control |
-| `deepseek-copilot.modelIdOverrides` | prefilled official ID map | API model IDs to send for each DeepSeek model entry. Change only for compatible third-party APIs with different model names |
-| `deepseek-copilot.debugMode` | `minimal` | Diagnostic mode: `minimal` for token usage only, `metadata` for privacy-preserving logs, or `verbose` for full request dumps and pipeline snapshots under extension global storage. Full dumps may include sensitive prompt text, tool schemas, file snippets, and image attachments. Use `DeepSeek: Open Request Dumps Folder` to open the dump location |
-| `deepseek-copilot.experimental.stabilizeToolList` | `false` | Experimental. Tries to pre-activate VS Code/Copilot virtual tools so the DeepSeek API `tools` parameter is more complete and stable across turns. May improve context-cache hit rate when enabled tools change between turns. Can increase input tokens because more function definitions may be included; cache-hit input tokens are cheaper but still count toward usage. Usually leave it off with 64 or fewer enabled tools unless the tool list still changes across turns |
+| `deepseek-copilot.baseUrl` | `https://api.deepseek.com` | API 端点——可改为自托管或代理部署地址 |
+| `deepseek-copilot.requestHeaders` | `{}` | 聊天补全请求的自定义请求头。[配置说明](https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/docs/settings/request-headers.zh.md) |
+| `deepseek-copilot.maxTokens` | `0` | 最大输出 Token 数（`0` = API 默认值）。可用于成本控制 |
+| `deepseek-copilot.modelIdOverrides` | 预填官方 ID 映射 | 各 DeepSeek 模型入口对应的 API 模型 ID。仅在使用模型名不同的兼容第三方 API 时修改 |
+| `deepseek-copilot.debugMode` | `minimal` | 诊断模式：`minimal` 仅上报 token 用量，`metadata` 输出隐私安全日志，`verbose` 将完整请求 dump 和 pipeline snapshot 写入扩展 global storage。完整 dump 可能包含敏感提示词文本、工具定义、文件片段和图片附件。使用 `DeepSeek: 打开请求 Dump 目录` 打开 dump 位置 |
+| `deepseek-copilot.experimental.stabilizeToolList` | `false` | 实验性设置。尝试预先激活 VS Code/Copilot 的虚拟工具，让传给 DeepSeek API 的 `tools` 参数在多轮对话中更完整、更稳定。当已启用工具跨轮次变化时，可能提高上下文缓存命中率。代价是 input tokens 可能增加；缓存命中的 input tokens 单价更低，但仍会计入用量。64 个或更少已启用工具时通常无需开启，除非工具列表仍在跨轮次变化 |
 
-Thinking Effort is configured from Copilot Chat's model picker for each DeepSeek model.
+思考强度可通过 Copilot Chat 的模型选择器对每个 DeepSeek 模型单独设置。
 
-Example `settings.json` override for compatible API proxies:
+兼容 API 代理的 `settings.json` 配置示例：
 
 ```json
 {
@@ -130,13 +132,13 @@ Example `settings.json` override for compatible API proxies:
 }
 ```
 
-## Known Issues
+## 已知问题
 
-### DeepSeek models are missing from Cloud sessions in the Agents window
+### Agents 窗口的 Cloud 会话中看不到 DeepSeek 模型
 
-The Agents window composer offers several session kinds. **Cloud** sessions (`Copilot` → `Cloud`) run in a GitHub-hosted sandbox and resolve their model list server-side, so the only entry is `Auto` — third-party BYOK models cannot be used there, and no extension setting changes that.
+Agents 窗口的输入框可以切换会话类型。**Cloud** 会话在 GitHub 托管的沙箱里运行，模型清单由服务端解析，因此只有一个 `Auto` —— 第三方 BYOK 模型无法在其中使用，任何扩展设置都改变不了这一点。
 
-Pick the local **Copilot** session type instead: the model picker there lists `deepseek/deepseek-flash` and `deepseek/deepseek-v4-pro` alongside your other BYOK providers. If they are missing from the local session picker too, enable `chat.agentHost.byokModels.enabled` and **fully restart VS Code**, since the agent host caches the provider list per window.
+请改用本地的 **Copilot** 会话类型：那里的模型选择器会把 `deepseek/deepseek-flash` 和 `deepseek/deepseek-v4-pro` 与其他 BYOK 提供方并列列出。如果本地会话里也没有，请开启 `chat.agentHost.byokModels.enabled` 并**完全重启 VS Code**，因为 agent host 按窗口缓存提供方列表。
 
 ```json
 {
@@ -144,35 +146,35 @@ Pick the local **Copilot** session type instead: the model picker there lists `d
 }
 ```
 
-The extension additionally declares `"capabilities": { "agentsWindow": { "supported": true } }` so it may run inside the Agents window itself. On VS Code 1.143 / 1.144 that declaration is only honored when `extensions.experimental.enableAgentsWindowCapability` is enabled; use `extensions.supportAgentsWindow` if you want the extension's own commands available in that window. Neither setting affects whether the models appear — model availability comes from the BYOK bridge, not from loading the extension there.
+扩展另外声明了 `"capabilities": { "agentsWindow": { "supported": true } }`，以便自身能在 Agents 窗口内运行。在 VS Code 1.143 / 1.144 上，该声明只有在开启 `extensions.experimental.enableAgentsWindowCapability` 后才会被采用；若希望在该窗口内使用扩展自己的命令，可设置 `extensions.supportAgentsWindow`。这两项都不影响模型是否出现——模型可用性来自 BYOK 桥接，与扩展是否在该窗口加载无关。
 
-Note on activation order: the extension registers its provider synchronously during activation and refreshes the model list after Copilot Chat finishes activating, so a slow Copilot startup does not leave the picker empty.
+关于激活顺序：扩展在激活阶段同步注册 provider，并在 Copilot Chat 激活完成后刷新模型列表，因此 Copilot 启动较慢时模型选择器不会长时间为空。
 
-### Models disappear from the Agents window once every VS Code window is closed
+### 关闭所有 VS Code 窗口后，Agents 窗口中的模型会消失
 
-The agent host does not run this extension's provider by itself. With `chat.agentHost.byokModels.enabled`, it wires in BYOK providers from a running VS Code extension host. Close the last VS Code window and that extension host shuts down, so the DeepSeek models disappear from the Agents window picker and in-flight requests fail.
+agent host 本身并不运行本扩展的 provider。开启 `chat.agentHost.byokModels.enabled` 后，它是从**正在运行的 VS Code 扩展宿主**接入 BYOK 模型的。关掉最后一个 VS Code 窗口，扩展宿主进程随之退出，DeepSeek 模型就会从 Agents 窗口的选择器中消失，进行中的请求也会失败。
 
-Workaround: keep at least one VS Code window open while working in the Agents window. Leaving it minimized is enough — the process has to exist, it does not have to be visible. Alternatively, run the same agent task from the Chat view of that window. This is a VS Code-side limitation that the extension cannot work around on its own.
+规避方式：在 Agents 窗口工作期间至少保留一个 VS Code 窗口不关闭。窗口最小化即可——需要的是进程还在，而不是窗口可见。也可以改在同一个窗口的 Chat 视图里执行同样的智能体任务。这是 VS Code 侧的限制，扩展无法自行绕过。
 
-## Compared to alternatives
+## 方案对比
 
-| | This extension | Local proxy (e.g. LiteLLM) | Standalone DeepSeek extensions |
+| | 本扩展 | 本地代理（如 LiteLLM） | 独立 DeepSeek 扩展 |
 |---|---|---|---|
-| Works inside Copilot Chat | ✅ | ✅ | ❌ separate UI |
-| Agent mode, tools, skills | ✅ | ✅ | ⚠️ reimplemented |
-| Vision support | ✅ native | ❌ | ❌ |
-| No extra process to run | ✅ | ❌ | ✅ |
-| One-click install | ✅ | ❌ | ✅ |
-| API key in OS keychain | ✅ | ❌ | ⚠️ varies |
+| 在 Copilot Chat 内使用 | ✅ | ✅ | ❌ 独立界面 |
+| Agent 模式、工具、Skills | ✅ | ✅ | ⚠️ 自行实现 |
+| 视觉支持 | ✅ 原生 | ❌ | ❌ |
+| 无需额外运行进程 | ✅ | ❌ | ✅ |
+| 一键安装 | ✅ | ❌ | ✅ |
+| API Key 存系统密钥链 | ✅ | ❌ | ⚠️ 各异 |
 
-## Acknowledgements
+## 致谢
 
-This project is a community fork of **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** by **Vizards**. The provider implementation, the i18n scaffolding, and most of the architecture come from that project — this fork would not exist without it. The upstream work is MIT licensed, and its copyright notice is preserved in [LICENSE](LICENSE) and shipped with every build.
+本项目是 **Vizards** 的 **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** 的社区分支。Provider 实现、i18n 脚手架以及绝大部分架构均来自该项目——没有上游的工作，就不会有这个分支。上游以 MIT 许可证发布，其版权声明完整保留在 [LICENSE](LICENSE) 中，并随每个构建产物一同分发。
 
-Thanks also to the upstream contributors and everyone who reported issues or sent pull requests there; the features in this fork build directly on that groundwork.
+同时感谢上游的贡献者，以及在那里提交 Issue 和 PR 的每一位——本分支的功能直接建立在他们的工作之上。
 
-This fork adds DeepSeek web search and web fetch tools, and publishes independently so those changes stay available while they are under review upstream.
+本分支新增了 DeepSeek 网页搜索与网页抓取工具，并独立发布，以便这些改动在上游评审期间也能使用。
 
-## License
+## 许可证
 
 [MIT](LICENSE)
