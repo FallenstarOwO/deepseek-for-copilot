@@ -136,7 +136,7 @@ Example `settings.json` override for compatible API proxies:
 
 The Agents window composer offers several session kinds. **Cloud** sessions (`Copilot` → `Cloud`) run in a GitHub-hosted sandbox and resolve their model list server-side, so the only entry is `Auto` — third-party BYOK models cannot be used there, and no extension setting changes that.
 
-Pick the local **Copilot** session type instead: the model picker there lists `deepseek/deepseek-flash` and `deepseek/deepseek-v4-pro` alongside your other BYOK providers. If they are missing from the local session picker too, enable `chat.agentHost.byokModels.enabled` and **fully restart VS Code**, since the agent host caches the provider list per window.
+Pick the local **Copilot** session type instead: the model picker there lists `deepseek/deepseek-flash` and `deepseek/deepseek-v4-pro` alongside your other BYOK providers. `chat.agentHost.byokModels.enabled` controls whether extension-provided BYOK models can run in agent-host sessions; it defaults to `true` in VS Code 1.146, so you normally do not need to set it. Older releases require enabling it explicitly.
 
 ```json
 {
@@ -144,15 +144,26 @@ Pick the local **Copilot** session type instead: the model picker there lists `d
 }
 ```
 
-The extension additionally declares `"capabilities": { "agentsWindow": { "supported": true } }` so it may run inside the Agents window itself. On VS Code 1.143 / 1.144 that declaration is only honored when `extensions.experimental.enableAgentsWindowCapability` is enabled; use `extensions.supportAgentsWindow` if you want the extension's own commands available in that window. Neither setting affects whether the models appear — model availability comes from the BYOK bridge, not from loading the extension there.
+### Resolved: the Agents window no longer requires an editor window first (VS Code 1.146 / extension 1.0.0 and later)
+
+In earlier releases the agent host bridged BYOK models from a **running VS Code extension host**, so the extension had to be loaded in an editor window before the DeepSeek models showed up in the Agents window — and they disappeared once the last editor window closed.
+
+Starting with **VS Code 1.146**, an extension that declares `"capabilities": { "agentsWindow": { "supported": true } }` is loaded by the Agents window by default, and the former `extensions.experimental.enableAgentsWindowCapability` gate has been removed. This extension has declared that capability since **1.0.0**. Verified with **extension 1.1.1 + VS Code 1.146.0**: with only the Agents window open and no editor window, the extension still activates inside that window (activation event `onLanguageModelChatProvider:deepseek`), and chat, tool calls, and the built-in search tools all work.
+
+The per-extension `extensions.supportAgentsWindow` override is therefore redundant and can be removed from your settings:
+
+```json
+// Old workaround for earlier VS Code releases; no longer needed
+{
+  "extensions.supportAgentsWindow": {
+    "fallenstarowo.deepseek-for-copilot-chat": true
+  }
+}
+```
+
+On VS Code versions before 1.146, `extensions.supportAgentsWindow` (or `extensions.experimental.enableAgentsWindowCapability` on 1.143 / 1.144) is still required for the extension to run inside the Agents window.
 
 Note on activation order: the extension registers its provider synchronously during activation and refreshes the model list after Copilot Chat finishes activating, so a slow Copilot startup does not leave the picker empty.
-
-### Models disappear from the Agents window once every VS Code window is closed
-
-The agent host does not run this extension's provider by itself. With `chat.agentHost.byokModels.enabled`, it wires in BYOK providers from a running VS Code extension host. Close the last VS Code window and that extension host shuts down, so the DeepSeek models disappear from the Agents window picker and in-flight requests fail.
-
-Workaround: keep at least one VS Code window open while working in the Agents window. Leaving it minimized is enough — the process has to exist, it does not have to be visible. Alternatively, run the same agent task from the Chat view of that window. This is a VS Code-side limitation that the extension cannot work around on its own.
 
 ## Compared to alternatives
 

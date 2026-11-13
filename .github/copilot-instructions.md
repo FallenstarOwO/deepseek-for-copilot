@@ -26,5 +26,5 @@
 
 - 更换扩展 ID 会得到全新的 SecretStorage，用户 API Key 通常需要重新执行 `DeepSeek: Set API Key`。实测 2026-10-30：同发布者下改名（`fallenstarowo.deepseek-for-copilot` → `fallenstarowo.deepseek-for-copilot-chat`）后新 ID 的密钥库**仍保留**了 key，卸载重装后无需重设；但不要依赖这一点，换发布者或换策略时必须验证。
 - 与官方版同时安装会因命令 ID 重复报 `command '<id>' already exists`，导致新扩展激活失败。发布说明需提示先卸载官方版。
-- 本地验证扩展是否真正工作，看 `%APPDATA%\Code\logs\<最新时间戳>\window1\exthost\<扩展ID>\DeepSeek.log` 里的 `[background] tokens: model=deepseek-flash ...` 行；有 token 统计即代表请求走通。
-- Agents 窗口模型可见性问题的排查口径见 `agent-config` 技能的「BYOK 故障速查」：Cloud 会话不支持第三方 BYOK，必须切到本地 Copilot 会话类型。
+- 本地验证扩展是否真正工作，看 `%APPDATA%\Code\logs\<最新时间戳>\window<N>\exthost\<扩展ID>\DeepSeek.log` 里的 `[background] tokens: model=deepseek-flash ...` 行；有 token 统计即代表请求走通。Agents 窗口自己也有一份 exthost，对应 `workspaceStorage` 里 `agent-sessions.code-workspace` 的那个 `window<N>`。
+- Agents 窗口：VS Code 1.146 起，声明了 `capabilities.agentsWindow.supported` 的扩展由 Agents 窗口默认加载并按 `onLanguageModelChatProvider:<vendor>` 激活，不再依赖编辑器窗口托管 provider；`extensions.supportAgentsWindow` 与 `extensions.experimental.enableAgentsWindowCapability` 对 1.146 已无必要。`chat.agentHost.byokModels.enabled` 在 1.146 默认 `true`。Cloud 会话仍不支持第三方 BYOK，必须切到本地 Copilot 会话类型；排查口径见 `agent-config` 技能的「BYOK 故障速查」。
