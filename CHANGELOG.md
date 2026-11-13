@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.1...v1.1.2) (2026-11-13)
+
+
+### Documentation
+
+* **readme:** make Chinese the primary README ([d69859b](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/d69859bf7f30e45d7d5cfdb54c008f0f7103fdf2))
+* **readme:** document that VS Code 1.146 resolves the Agents window limitation (no editor window required, `extensions.supportAgentsWindow` no longer needed) ([d14ab19](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/d14ab1960cc60b874c600b7fa1023ba0124e1f9a))
+
 ## [1.1.1](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.0...v1.1.1) (2026-11-05)
 
 
