@@ -1,5 +1,78 @@
 # Changelog
 
+## [1.2.0](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.2...v1.2.0) (2026-11-13)
+
+
+### Features
+
+* add configurable API model IDs for DeepSeek V4 Flash and Pro models ([#4](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/4)) ([de132ca](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/de132ca14f46a03584932e646c76ebe2add01aef))
+* Chinese (zh-cn) i18n support ([#16](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/16)) ([72a8a69](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/72a8a696419d85aa5f82d1142abbc42ec4b50e9b))
+* **config:** add configurable request headers ([#266](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/266)) ([d1a0fc4](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/d1a0fc44dc324f70fba2a8daa3705e0332750e3b)), closes [#264](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/264)
+* **diagnostics:** add opt-in cache trace diagnostics ([#35](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/35)) ([fa11e5b](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/fa11e5bea0ccf4023b9947bba5ab4c333abb3ccb))
+* initial release v0.1.0 ([a30057e](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/a30057e7a82493e681d92b72a16ef97cf1db60d6))
+* **provider:** add DeepSeek V4.1 Flash and retirement notices ([#267](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/267)) ([75c1478](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/75c1478339fe2d6685f1aef66c860ca37edf4973))
+* **provider:** add low reasoning effort for DeepSeek V4 Flash ([#224](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/224)) ([3ce1912](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/3ce1912c75e1ffaf6e803eec0516660a39edbe6e)), closes [#220](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/220)
+* **provider:** add segment-aware request diagnostics ([#66](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/66)) ([c20565a](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/c20565a5b9555efc5535fbb7897e69e361af7906))
+* **provider:** drop the V4 Pro vision proxy module ([51439c5](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/51439c5cf121efe4a934c967a2eabc2307468350))
+* **provider:** show DeepSeek pricing in model picker ([#128](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/128)) ([959bd0d](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/959bd0de3be29cbc5e55540c113d74d09c7cb23c))
+* report token usage to Copilot context via LanguageModelDataPart ([#60](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/60)) ([01ef9e5](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/01ef9e5f4134fbb5981a5f2c3dbd75ff6bd8162e))
+* **tools:** add DeepSeek web search and fetch tools ([836124a](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/836124a3175f63144be6770fffaea0fc4c11223a))
+* **vision:** add configurable vision proxy ([#127](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/127)) ([f5d9b8d](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/f5d9b8d35dc50c8c3fba307814d6af682e1ac1b1))
+* **vision:** add DeepSeek V4 Flash Vision Exp support ([#243](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/243)) ([8deb532](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/8deb5321f7ef385789206da33af681a74ea96012)), closes [#242](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/242)
+
+
+### Bug Fixes
+
+* add in-memory LRU cache for vision image descriptions ([#36](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/36)) ([05fac93](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/05fac9392270e5d58a51769b76f4c5378457b1bc))
+* **auth:** allow compatible provider API tokens ([#34](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/34)) ([e06c550](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/e06c550e2183ec1c143dcaee28c4b4b32f89a3a1))
+* **client:** improve request failure diagnostics ([#109](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/109)) ([40cc542](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/40cc542bfc7cdf266f857e30ecb4ad35a2f439f1))
+* **diagnostics:** classify cache traces by request kind ([#97](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/97)) ([7212765](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/7212765aaa53a57145fa9d33412bfb453ee7f879))
+* **extension:** let VS Code infer extension host ([#78](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/78)) ([95e79ab](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/95e79ab5e77f2745f1044e25e55a01fe7c7910eb))
+* **json:** sanitize lone surrogates before serialization ([#40](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/40)) ([40a21a4](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/40a21a4719edc8c2fe0d2e9d25953244917af8b3))
+* **logger:** diagnostics log visibility ([#89](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/89)) ([792691d](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/792691d15ca77ecc4a7313d5c9f6ebb3392d5bb7))
+* **manifest:** resolve marketplace display metadata ([#41](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/41)) ([20b86b7](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/20b86b791cbd068477cc46a556e2e061cee581e3))
+* **pricing:** show dynamic rates in model picker info text ([#241](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/241)) ([e13414f](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/e13414fcf8d3a21400d69951a7acdd4037fd3b81))
+* **provider:** add schemas for parameterless tools ([#282](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/282)) ([fb9b048](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/fb9b048ae9f56a74d1ddccaff4054cb4bf5f533d)), closes [#280](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/280)
+* **provider:** avoid Copilot BYOK activation deadlock ([#275](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/275)) ([61dd50f](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/61dd50ff09f9c82d11800289295e92f0abde86f6)), closes [#274](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/274)
+* **provider:** dedupe streaming usage reports ([#145](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/145)) ([b3cbdfa](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/b3cbdfa8be7e3ee2139e2763014cf1b391e7cf80))
+* **provider:** disable thinking for internal helper requests ([#137](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/137)) ([6809989](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/680998971fb01ef9d88f70fa6bdd7709a510095c))
+* **provider:** expose low reasoning effort for DeepSeek V4 Pro ([#230](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/230)) ([73821ba](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/73821ba7a2b6e1c973cbfd428e770ebbe5f0b7fe))
+* **provider:** improve DeepSeek request failure handling ([#104](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/104)) ([788b1d7](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/788b1d7c36aab2d92aeff67412b9ea66ddb5f48c))
+* **provider:** make preflight tool call ids provider-safe ([#86](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/86)) ([cb91620](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/cb916206c1c27795a80c7923d95800e8968530d2))
+* **provider:** mark DeepSeek models as BYOK ([#162](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/162)) ([50ff6ba](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/50ff6ba85b2c8d7911d7f6dddb6492c2ebdb1b17))
+* **provider:** persist reasoning across reloads ([#79](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/79)) ([0605da9](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/0605da9af052c9bede99333a39615762ae53ea29))
+* **provider:** prevent fragmented thinking blocks ([#304](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/304)) ([b7c9527](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/b7c9527b704522493d553b1672d67881ed8ad017)), closes [#303](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/303)
+* **provider:** recursively count all part types in provideTokenCount ([#51](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/51)) ([1bd8636](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/1bd8636d04e98036b76e74d44abd8ac39ee7af1c))
+* **provider:** remove model refresh during deactivation ([#271](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/271)) ([7126168](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/71261682722abecc59f5bc54b11ca79fee63957a))
+* **provider:** remove V4 Pro retirement notices ([#272](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/272)) ([3b0fcc5](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/3b0fcc5c5d709633e56b4efaeb3c8df9fc4eb3f3))
+* **provider:** stabilize DeepSeek tool list handling ([#77](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/77)) ([eec6bde](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/eec6bdeb11e08f4f77bf4ff11b273a45c635d585))
+* **provider:** stabilize reasoning replay across tool turns ([#39](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/39)) ([e283bc0](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/e283bc014bf8c2e2b4e0ebfd0869be6819a35d46))
+* **provider:** support tool-result images across vision routes ([#260](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/260)) ([3384f36](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/3384f36525676837399a1ad625399a195d43ea88))
+* remove extensionDependencies on github.copilot-chat for SSH-Remote compatibility ([#45](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/45)) ([11d020e](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/11d020e196fac5f80b48ae1e2f2314680191f2aa))
+* remove stale 128-tool limit ([#291](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/291)) ([6c4fa95](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/6c4fa953b43d84267aa99dae80f9f51b6550db72)), closes [#286](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/286)
+* rename displayName to avoid Marketplace name collision ([a9f11f8](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/a9f11f85c0ca2efeee1fc77832a49abcb2b79f61))
+* **replay:** persist reasoning and vision markers across turns ([#82](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/82)) ([30b725b](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/30b725b90b43b5165ac6299354e4f5f05381cc54))
+* report context window correctly ([#71](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/71)) ([d8c9b86](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/d8c9b86cfcd62304a9893c77224d8c0275781688))
+* **settings:** make API key and base URL actions discoverable ([#276](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/276)) ([0ccd91e](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/0ccd91e85e0754eae5d41350df7e00561d14856d)), closes [#270](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/270)
+* thinking effort dropdown missing on first launch ([#13](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/13)) ([27deac1](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/27deac14cb69a3e51eaf908919ded9db8fcb1ab6))
+* **vision-proxy:** add configurable request timeout ([#203](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/203)) ([0a3184a](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/0a3184a63a41858b2fbc2eae9d309dc3a51ddd16))
+* **vision:** disambiguate VS Code LM model selection ([#161](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/161)) ([1d7b668](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/1d7b6685649b1ee05f3f49f7cd2008b237734c18)), closes [#149](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/149)
+* **vision:** improve Vision Proxy system prompt to raise utility/usability ([#206](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/206)) ([00fded7](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/00fded758f358d438d9527aba63a57cde487245a))
+* **vision:** retain image context in follow-up turns ([#81](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/81)) ([797b3d3](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/797b3d3f40f1da7c5c64a2f09d273104dcfd094c))
+* **vision:** stabilize proxied tool image descriptions ([#261](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/261)) ([dad64fb](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/dad64fb65b5e563fd668d300de4447d6e884bd0a))
+
+
+### Documentation
+
+* add Simplified Chinese README (zh-cn) ([#46](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/46)) ([a477c1e](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/a477c1ecc6ea1fde1060d685dfce8dfdb97c8996))
+* document Agents window model availability ([3e6ca2a](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/3e6ca2ab8e827291d3fd4f7d5af4e48e97a7e75f))
+* explain native vision and vision proxy ([#246](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/246)) ([b0d8e5a](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/b0d8e5a1969de17e179e3d842aefa7af3e8402b8))
+* **readme:** clarify no extra process comparison ([#84](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/84)) ([39a1cf6](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/39a1cf687be36edc2ba81270b2f14ebe6a39a0d6))
+* **readme:** document model ID overrides ([#22](https://github.com/FallenstarOwO/deepseek-for-copilot/issues/22)) ([7d38322](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/7d38322818d15380eba7c28058de45140a7aa73a))
+* **readme:** make Chinese the primary README ([d69859b](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/d69859bf7f30e45d7d5cfdb54c008f0f7103fdf2))
+* **readme:** note VS Code 1.146 resolves the Agents window limitation ([d14ab19](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/d14ab1960cc60b874c600b7fa1023ba0124e1f9a))
+* record the fork's release pipeline and marketplace constraints ([b0d821a](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/b0d821a278812290fe0c21ea8f3dfaa7ee25b639))
+
 ## [1.1.2](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.1...v1.1.2) (2026-11-13)
 
 
