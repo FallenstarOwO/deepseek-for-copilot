@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.2...v1.1.3) (2026-11-21)
+
+
+### Features
+
+* add balance panel, OCR tool, and harden request paths ([a50ecd7](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/a50ecd722559541213f3523e0dbf1a69064d340a))
+
 ## [1.1.2](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.1...v1.1.2) (2026-11-13)
 
 
