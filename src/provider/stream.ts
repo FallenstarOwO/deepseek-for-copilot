@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import vscode from 'vscode';
 import { createUserFacingError } from '../client';
+import { t } from '../i18n';
 import { logger } from '../logger';
 import type { DeepSeekToolCall, DeepSeekUsage } from '../types';
 import {
@@ -75,6 +76,12 @@ export function streamChatCompletion({
 
 				onError: (error: Error) => {
 					throw createUserFacingError(error);
+				},
+
+				onWarning: (message: string) => {
+					logger.warn(formatRequestLogLine(prepared.requestKind, message));
+					reportInitialResponseNoticeOnce(progress, state, initialResponseNotice);
+					progress.report(new vscode.LanguageModelTextPart(`\n\n⚠️ ${message}`));
 				},
 
 				onDone: () => {
@@ -233,14 +240,24 @@ function handleToolCall(
 ): void {
 	state.emittedToolCallIds.push(toolCall.id);
 
-	try {
-		const args = JSON.parse(toolCall.function.arguments);
-		progress.report(
-			new vscode.LanguageModelToolCallPart(toolCall.id, toolCall.function.name, args),
-		);
-	} catch {
-		progress.report(new vscode.LanguageModelToolCallPart(toolCall.id, toolCall.function.name, {}));
+	let args: object;
+	const rawArguments = toolCall.function.arguments;
+	if (rawArguments.trim().length === 0) {
+		// Zero-parameter tools legitimately send empty arguments.
+		args = {};
+	} else {
+		try {
+			args = JSON.parse(rawArguments);
+		} catch {
+			// Log only the payload shape, never its content: metadata debug logs are
+			// advertised as privacy-safe enough to share in public issue reports.
+			logger.warn(
+				`Invalid tool call arguments for ${toolCall.function.name} (${rawArguments.length} chars)`,
+			);
+			throw new Error(t('request.invalidToolArguments', toolCall.function.name));
+		}
 	}
+	progress.report(new vscode.LanguageModelToolCallPart(toolCall.id, toolCall.function.name, args));
 }
 
 function finalizeReplayDiagnostics(

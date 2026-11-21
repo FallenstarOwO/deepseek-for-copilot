@@ -57,16 +57,16 @@ const zh: Translations = {
 	'settings.resetBaseUrl.afterInherited': '重置后继承其余配置，实际生效地址请查看设置',
 	'settings.resetBaseUrl.failed': '重置 Base URL 失败，请运行 "DeepSeek: 显示日志" 查看详情。',
 
-	// Thinking Effort — short labels for model picker dropdown
-	'status.thinking': '思考模式',
-	'thinking.none': '停用',
-	'thinking.none.desc': '停用思考，响应更快',
-	'thinking.low': '轻量',
-	'thinking.low.desc': '轻量推理，适合快速编辑和简单任务',
-	'thinking.high': '标准',
+	// Thinking level — labels mirror the model settings panel
+	'status.thinking': '思考层级',
+	'thinking.none': '无',
+	'thinking.none.desc': '关闭思考，响应更快',
+	'thinking.low': '低',
+	'thinking.low.desc': '快速推理，适合简单任务',
+	'thinking.high': '高',
 	'thinking.high.desc': '推荐日常使用',
-	'thinking.max': '深度',
-	'thinking.max.desc': '深度推理，适合复杂任务',
+	'thinking.max': '最大值',
+	'thinking.max.desc': '最强推理，适合复杂任务',
 
 	// Request
 	'request.preflightRoundLimitExceeded':
@@ -158,6 +158,73 @@ const zh: Translations = {
 	'tools.error.network.generic': '[{0}] 网络请求失败。请检查网络连接与自定义 baseUrl。',
 	'tools.output.search.empty': '未找到相关结果。可尝试更换或细化搜索词后重试。',
 	'tools.output.truncated': '（输出已截断：保留前 {0} / 共 {1} 字符）',
+	'tools.invocation.ocr': '正在识别文件文字',
+	'tools.confirm.ocr.title': 'DeepSeek OCR',
+	'tools.confirm.ocr.message':
+		'将 "{0}" 上传到 {2} 运行 OCR（{1}）。按识别成功的页数计费，识别开始后取消不会中断识别。',
+	'tools.error.ocrDisabled':
+		'DeepSeek OCR 已禁用。请在设置中启用 "deepseek-copilot.ocr.enabled" 后重试。',
+	'tools.error.ocr.fileNotFound': '找不到文件：{0}。请提供绝对路径，或当前工作区内的相对路径。',
+	'tools.error.ocr.fileTooLarge': '文件大小 {0} MiB 超过 100 MiB 上限。',
+	'tools.error.ocr.invalidResponse': '服务返回了无法解析的 OCR 响应。',
+	'tools.error.ocr.recognitionFailed': 'OCR 识别失败：{0}',
+	'tools.error.ocr.timeout': 'OCR 超时（{0}s）。请使用更小的文件重试。',
+	'tools.error.ocr.http.400':
+		'[HTTP {0}] 请求无效或文件无法处理。请确认文件格式受支持（PDF、Word、PowerPoint 或常见图片格式）。',
+	'tools.error.ocr.http.408': '[HTTP {0}] 上传过慢或连接中断。请检查网络后重试。',
+	'tools.error.ocr.http.413': '[HTTP {0}] 文件超过 100 MiB 上限。请压缩或拆分文件后重试。',
+	'tools.error.ocr.http.429':
+		'[HTTP {0}] 同时进行的识别数达到上限（15）。请等待进行中的识别完成后再试。',
+	'tools.error.ocr.http.504': '[HTTP {0}] 上传与识别超过总时长上限（180s）。请使用更小的文件重试。',
+	'tools.output.ocr.header': 'OCR 结果：{0} · 共 {1} 页',
+	'tools.output.ocr.page': '第 {0} 页',
+	'tools.output.ocr.incomplete': '（本页输出被截断）',
+	'tools.output.ocr.empty': 'OCR 未返回文字内容。',
+
+	// Balance panel
+	'balance.panel.title': 'DeepSeek 余额',
+	'balance.panel.loading': '正在查询余额…',
+	'balance.panel.refresh': '刷新',
+	'balance.panel.retry': '重试',
+	'balance.panel.available': '账户可用',
+	'balance.panel.unavailable': '余额不足',
+	'balance.panel.total': '总余额',
+	'balance.panel.granted': '赠金余额',
+	'balance.panel.toppedUp': '充值余额',
+	'balance.panel.updatedAt': '更新于 {0}',
+	'balance.panel.viewUsage': '查看用量',
+	'balance.panel.openFailed': '打开余额面板失败，请运行 "DeepSeek: 显示日志" 查看详情。',
+	'balance.error.notConfigured': '尚未配置 API Key，设置后即可查询余额。',
+	'balance.error.unsupported':
+		'[HTTP {0}] 当前端点不支持余额查询。余额查询仅官方 DeepSeek API 提供，第三方服务通常没有 /user/balance 接口。',
+	'balance.error.http.401':
+		'[HTTP {0}] API Key 无效或未认证，请运行 "DeepSeek: 设置 API Key" 重新配置。',
+	'balance.error.http.generic': '[HTTP {0}] 查询余额失败，服务返回错误。',
+	'balance.error.timeout': '查询余额超时（{0}s），请稍后重试。',
+	'balance.error.cancelled': '请求已取消。',
+	'balance.error.network':
+		'[{0}] 网络请求失败。请检查网络连接、防火墙或代理设置，以及自定义 baseUrl。',
+	'balance.error.invalidResponse':
+		'服务返回了无法解析的余额响应。若使用自定义 baseUrl，请确认其支持 GET /user/balance。',
+	'balance.error.unknown': '查询余额失败：{0}',
+	'balance.statusBar.name': 'DeepSeek 余额',
+	'balance.statusBar.tooltip.title': 'DeepSeek 账户余额',
+	'balance.statusBar.clickHint': '点击刷新',
+	'balance.statusBar.registerFailed': '余额状态栏初始化失败，核心功能不受影响。',
+	'endpointConfig.ignored.message':
+		'检测到工作区级的 `{0}` 配置：这两项出于安全考虑只接受用户级设置，工作区值已被忽略。为避免把可能属于旧端点的 API Key 发往新端点，余额状态栏已暂停；请确认当前端点与 Key 后在用户设置中重新配置。',
+	'endpointConfig.ignored.openSettings': '打开用户设置',
+
+	// Stream integrity
+	'error.stream.disconnected':
+		'响应流在完成前中断（未收到结束标记），已生成的内容可能不完整。请重试。',
+	'error.stream.length': '模型输出达到长度上限，回答被截断。',
+	'error.stream.contentFilter': '模型输出被内容安全策略过滤，本次回答不完整。',
+	'error.stream.aborted': '服务端中断了生成。请重试。',
+	'error.stream.resource': '系统推理资源不足，生成被打断。请稍后重试。',
+	'error.stream.idleTimeout': '响应流超时（{0}s 无数据）。请检查网络或代理设置后重试。',
+	'error.stream.serverError': '服务返回错误：{0}',
+	'request.invalidToolArguments': '模型为工具 "{0}" 返回了无效参数，已中止本轮以避免错误调用。',
 };
 
 const en: Translations = {
@@ -205,16 +272,16 @@ const en: Translations = {
 	'settings.resetBaseUrl.failed':
 		'Failed to reset Base URL. Run "DeepSeek: Show Logs" for details.',
 
-	// Thinking Effort
-	'status.thinking': 'Thinking Effort',
+	// Thinking level — labels mirror the model settings panel
+	'status.thinking': 'Thinking Level',
 	'thinking.none': 'None',
 	'thinking.none.desc': 'Disable thinking for faster responses',
 	'thinking.low': 'Low',
-	'thinking.low.desc': 'Light reasoning for quick edits and simple tasks',
+	'thinking.low.desc': 'Fast reasoning for simple tasks',
 	'thinking.high': 'High',
 	'thinking.high.desc': 'Recommended for most tasks',
-	'thinking.max': 'Max',
-	'thinking.max.desc': 'Maximum reasoning depth for complex agent tasks',
+	'thinking.max': 'Maximum',
+	'thinking.max.desc': 'Deepest reasoning for complex tasks',
 
 	// Request
 	'request.preflightRoundLimitExceeded':
@@ -326,6 +393,84 @@ const en: Translations = {
 		'[{0}] Network request failed. Check your network connection and custom baseUrl.',
 	'tools.output.search.empty': 'No results found. Try a different or more specific query.',
 	'tools.output.truncated': '(Output truncated: kept the first {0} of {1} characters)',
+	'tools.invocation.ocr': 'Recognizing text in file',
+	'tools.confirm.ocr.title': 'DeepSeek OCR',
+	'tools.confirm.ocr.message':
+		'Upload "{0}" to {2} for OCR ({1})? Billed per recognized page; cancellation does not stop a started recognition.',
+	'tools.error.ocrDisabled':
+		'DeepSeek OCR is disabled. Enable "deepseek-copilot.ocr.enabled" in Settings and try again.',
+	'tools.error.ocr.fileNotFound':
+		'File not found: {0}. Provide an absolute path or a path relative to the current workspace.',
+	'tools.error.ocr.fileTooLarge': 'The file is {0} MiB, exceeding the 100 MiB limit.',
+	'tools.error.ocr.invalidResponse': 'The service returned an unparseable OCR response.',
+	'tools.error.ocr.recognitionFailed': 'OCR recognition failed: {0}',
+	'tools.error.ocr.timeout': 'OCR timed out ({0}s). Try again with a smaller file.',
+	'tools.error.ocr.http.400':
+		'[HTTP {0}] Invalid request or unprocessable file. Make sure the file format is supported (PDF, Word, PowerPoint, or common image formats).',
+	'tools.error.ocr.http.408':
+		'[HTTP {0}] The upload was too slow or the connection stalled. Check your network and try again.',
+	'tools.error.ocr.http.413':
+		'[HTTP {0}] The file exceeds the 100 MiB limit. Compress or split it and try again.',
+	'tools.error.ocr.http.429':
+		'[HTTP {0}] The concurrent recognition limit (15) is reached. Wait for running recognitions to finish and try again.',
+	'tools.error.ocr.http.504':
+		'[HTTP {0}] Upload and recognition exceeded the total time limit (180s). Try a smaller file.',
+	'tools.output.ocr.header': 'OCR result for {0} ({1} pages)',
+	'tools.output.ocr.page': 'Page {0}',
+	'tools.output.ocr.incomplete': '(this page is incomplete)',
+	'tools.output.ocr.empty': 'The OCR returned no text content.',
+
+	// Balance panel
+	'balance.panel.title': 'DeepSeek Balance',
+	'balance.panel.loading': 'Fetching balance…',
+	'balance.panel.refresh': 'Refresh',
+	'balance.panel.retry': 'Retry',
+	'balance.panel.available': 'Available',
+	'balance.panel.unavailable': 'Insufficient balance',
+	'balance.panel.total': 'Total balance',
+	'balance.panel.granted': 'Granted balance',
+	'balance.panel.toppedUp': 'Topped-up balance',
+	'balance.panel.updatedAt': 'Updated {0}',
+	'balance.panel.viewUsage': 'View Usage',
+	'balance.panel.openFailed':
+		'Failed to open the balance panel. Run "DeepSeek: Show Logs" for details.',
+	'balance.error.notConfigured': 'API key is not configured. Set an API key to check your balance.',
+	'balance.error.unsupported':
+		'[HTTP {0}] The current endpoint does not provide a balance API. Balance lookup is only available on the official DeepSeek API; third-party services usually do not implement /user/balance.',
+	'balance.error.http.401':
+		'[HTTP {0}] The API key is invalid or unauthorized. Run "DeepSeek: Set API Key" to configure it again.',
+	'balance.error.http.generic':
+		'[HTTP {0}] Failed to query balance; the service returned an error.',
+	'balance.error.timeout': 'The balance request timed out ({0}s). Try again later.',
+	'balance.error.cancelled': 'The request was cancelled.',
+	'balance.error.network':
+		'[{0}] Network request failed. Check your network connection, firewall, or proxy settings, and your custom baseUrl.',
+	'balance.error.invalidResponse':
+		'The service returned an unparseable balance response. With a custom baseUrl, make sure it supports GET /user/balance.',
+	'balance.error.unknown': 'Failed to query balance: {0}',
+	'balance.statusBar.name': 'DeepSeek Balance',
+	'balance.statusBar.tooltip.title': 'DeepSeek account balance',
+	'balance.statusBar.clickHint': 'Click to refresh',
+	'balance.statusBar.registerFailed':
+		'Failed to initialize the balance status bar; core features are unaffected.',
+	'endpointConfig.ignored.message':
+		'Workspace-level `{0}` settings were found but ignored: both options are user-scope only for security. The balance status bar is paused so an API key issued for the previous endpoint is not sent to a new one automatically. Confirm the endpoint and key in your user settings.',
+	'endpointConfig.ignored.openSettings': 'Open User Settings',
+
+	// Stream integrity
+	'error.stream.disconnected':
+		'The response stream was interrupted before completion (no end marker); the generated content may be incomplete. Please retry.',
+	'error.stream.length': 'The model output reached the length limit; the response was truncated.',
+	'error.stream.contentFilter':
+		'The model output was filtered by content safety policy; the response is incomplete.',
+	'error.stream.aborted': 'The server aborted generation. Please retry.',
+	'error.stream.resource':
+		'Insufficient system resource; generation was interrupted. Please try again later.',
+	'error.stream.idleTimeout':
+		'The response stream timed out ({0}s without data). Check your network or proxy settings and retry.',
+	'error.stream.serverError': 'The server returned an error: {0}',
+	'request.invalidToolArguments':
+		'The model returned invalid arguments for tool "{0}"; aborting this turn to avoid a bad call.',
 };
 
 /**

@@ -4,7 +4,7 @@ import {
 	getNetworkErrorCauseInfo,
 	getNetworkErrorCode,
 } from '../client/error/network';
-import { isOfficialDeepSeekBaseUrl, normalizeBaseUrl } from '../endpoint';
+import { buildToolEndpoint } from '../endpoint';
 import { t } from '../i18n';
 import type {
 	WebFetchInput,
@@ -19,28 +19,6 @@ export const SEARCH_TIMEOUT_MS = 30_000;
 export const FETCH_TIMEOUT_MS = 60_000;
 
 const SERVER_MESSAGE_MAX_CHARS = 300;
-
-/**
- * Build the official tool endpoint for a given base URL.
- *
- * The official host also serves `/beta` (beta features) and `/v1` (OpenAI
- * compatibility); the tools API always lives under `/v1`, so the path segment
- * of an official base URL must be ignored instead of prefixed.
- *
- * @internal Exported for tests.
- */
-export function buildToolEndpoint(baseUrl: string, toolPath: 'search' | 'fetch'): string {
-	const normalized = normalizeBaseUrl(baseUrl);
-	if (isOfficialDeepSeekBaseUrl(normalized)) {
-		return `${new URL(normalized).origin}/v1/tools/${toolPath}`;
-	}
-	let base = normalized;
-	if (base.toLowerCase().endsWith('/v1')) {
-		// Re-trim trailing slashes after stripping `/v1` so `https://x//v1` does not yield `https://x//v1/...`.
-		base = normalizeBaseUrl(base.slice(0, -3));
-	}
-	return `${base}/v1/tools/${toolPath}`;
-}
 
 /** @internal Exported for tests. */
 export async function postToolEndpoint<TData>(
@@ -71,6 +49,7 @@ export async function postToolEndpoint<TData>(
 			},
 			body: JSON.stringify(body),
 			signal: controller.signal,
+			redirect: 'error',
 		});
 		if (!response.ok) {
 			throw await createHttpToolError(response, tool);

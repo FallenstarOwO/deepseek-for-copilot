@@ -1,4 +1,5 @@
 import vscode from 'vscode';
+import { showBalancePanel } from '../balance';
 import { CONFIG_SECTION, EXTERNAL_URLS } from '../consts';
 import { t } from '../i18n';
 import { logger } from '../logger';
@@ -21,6 +22,14 @@ export function registerCommands(context: vscode.ExtensionContext): void {
 		vscode.commands.registerCommand('deepseek-copilot.openSettings', () =>
 			vscode.commands.executeCommand('workbench.action.openSettings', 'deepseek-copilot'),
 		),
+		vscode.commands.registerCommand('deepseek-copilot.showBalance', () => {
+			try {
+				showBalancePanel(context);
+			} catch (error) {
+				logger.warn('Failed to open balance panel', error);
+				void vscode.window.showErrorMessage(t('balance.panel.openFailed'));
+			}
+		}),
 	);
 }
 

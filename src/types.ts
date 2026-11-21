@@ -21,14 +21,6 @@ export interface DeepSeekImageUrlContentPart {
 
 export type DeepSeekContentPart = DeepSeekTextContentPart | DeepSeekImageUrlContentPart;
 
-export interface DeepSeekMessage {
-	role: 'system' | 'user' | 'assistant' | 'tool';
-	content: string | DeepSeekContentPart[];
-	tool_call_id?: string;
-	tool_calls?: DeepSeekToolCall[];
-	reasoning_content?: string;
-}
-
 export interface DeepSeekToolCall {
 	id: string;
 	type: 'function';
@@ -38,7 +30,7 @@ export interface DeepSeekToolCall {
 	};
 }
 
-export interface DeepSeekTool {
+export interface DeepSeekFunctionTool {
 	type: 'function';
 	function: {
 		name: string;
@@ -47,12 +39,22 @@ export interface DeepSeekTool {
 	};
 }
 
+export type DeepSeekTool = DeepSeekFunctionTool;
+
 export interface DeepSeekUsage {
 	prompt_tokens: number;
 	completion_tokens: number;
 	total_tokens: number;
 	prompt_cache_hit_tokens?: number;
 	prompt_cache_miss_tokens?: number;
+}
+
+export interface DeepSeekMessage {
+	role: 'system' | 'user' | 'assistant' | 'tool';
+	content: string | DeepSeekContentPart[];
+	tool_call_id?: string;
+	tool_calls?: DeepSeekToolCall[];
+	reasoning_content?: string;
 }
 
 export interface DeepSeekRequest {
@@ -106,6 +108,8 @@ export interface StreamCallbacks {
 	onError: (error: Error) => void;
 	onDone: () => void;
 	onUsage?: (usage: DeepSeekUsage) => void;
+	/** Non-fatal anomaly appended to the response (for example, truncated output). */
+	onWarning?: (message: string) => void;
 }
 
 // ---- Model definitions ----

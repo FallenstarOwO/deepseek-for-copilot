@@ -24,6 +24,12 @@ export function isWebFetchEnabled(): boolean {
 	return config.get<boolean>('webTools.fetch.enabled', true);
 }
 
+/** Whether the official DeepSeek OCR tool is enabled. Opt-in: uploads local files. */
+export function isOcrEnabled(): boolean {
+	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
+	return config.get<boolean>('ocr.enabled', false);
+}
+
 export function getRequestHeaders(): Record<string, string> {
 	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
 	return config.get<Record<string, string>>('requestHeaders', {});
@@ -84,6 +90,22 @@ export function getRequestDumpEnabled(): boolean {
 export function getStabilizeToolListEnabled(): boolean {
 	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
 	return config.get<boolean>('experimental.stabilizeToolList', false);
+}
+
+/** Whether the status bar balance item is enabled. */
+export function isBalanceStatusBarEnabled(): boolean {
+	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
+	return config.get<boolean>('statusBar.balance.enabled', true);
+}
+
+/**
+ * Auto-refresh interval (minutes) for the status bar balance.
+ * Clamped to a minimum of 5 to avoid hammering the API.
+ */
+export function getBalanceRefreshIntervalMinutes(): number {
+	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
+	const value = config.get<number>('statusBar.balance.refreshIntervalMinutes', 5);
+	return Number.isFinite(value) ? Math.max(5, value) : 5;
 }
 
 /**

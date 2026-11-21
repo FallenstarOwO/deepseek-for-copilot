@@ -14,114 +14,61 @@
   <a href="https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.en.md">English</a>
 </p>
 
-**在 Copilot Chat 模型选择器中直接使用 DeepSeek V4——无需离开你熟悉的 Copilot 工作流。**
+**在 Copilot Chat 模型选择器中直接使用 DeepSeek V4——保留 Agent 模式、工具调用与 Skills，无需切换界面。**
 
-> **English summary:** Pick DeepSeek V4 from the Copilot Chat model picker and keep everything Copilot already gives you — agent mode, tool calling, skills, and native vision. You bring your own DeepSeek API key, stored in the OS keychain. [Read the English README →](https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.en.md)
+> **English summary:** Pick DeepSeek V4 from the Copilot Chat model picker and keep everything Copilot already gives you. Bring your own API key, stored in the OS keychain. [Read the English README →](https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.en.md)
 
 > **非官方社区分支。** 由 `fallenstarowo` 从 [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot) 发布，与原作者 [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot) 无隶属或背书关系；MIT 许可证与原始版权声明均予保留。两个扩展注册同一个 `deepseek` 模型 vendor，**安装本扩展前请先卸载官方版本**。
 
 <p align="center">
-  <img src="resources/screenshots/01-picker.png" alt="Copilot Chat 模型选择器中的 DeepSeek 分组，列出 DeepSeek V4 Pro 与 DeepSeek V4.1 Flash，并显示「最大值 · Max 1M」思考深度" width="798">
+  <img src="resources/screenshots/01-picker.png" alt="Copilot Chat 模型选择器中的 DeepSeek 分组，列出 DeepSeek V4 Pro 与 DeepSeek V4.1 Flash" width="798">
 </p>
-
-喜欢 DeepSeek 的性价比，但不想放弃 GitHub Copilot 的 Agent 模式、工具调用和成熟的交互体验？本扩展将 **DeepSeek V4.1 Flash 等模型**直接接入 Copilot Chat 模型选择器，支持**原生视觉**、**思考模式**，并使用你自己的 API Key。
-
-## 为什么选这个扩展？
-
-- **不是替换 Copilot，而是增强它。** 没有新的侧边栏，没有新的聊天界面需要学习。只是在你已经在用的模型选择器中多了一个选项。
-- **Agent 模式、工具调用、Instructions、MCP、Skills——全部正常运作。** Copilot 的完整能力栈，现在跑在 DeepSeek 上。
-- **原生图片输入。** V4.1 Flash 原生接收图片附件；V4 Pro 仅支持文本输入。
-- **需自行提供 API Key，直接向 DeepSeek 付费。** 你的 API Key，你的账单，你的速率限制。密钥存储在操作系统密钥链中，不会以明文形式写入磁盘。
-
-## 功能特性
-
-### DeepSeek 模型出现在模型选择器中
-选择器包含 V4.1 Flash 和 V4 Pro，支持长上下文、工具调用和可配置的思考强度。
-
-### 原生视觉
-**DeepSeek V4.1 Flash** 原生处理图片附件：图片附件会随对话内容一起直接发送给 API。**DeepSeek V4 Pro** 不支持图片输入，仅处理文本。
-
-[上下文缓存](https://api-docs.deepseek.com/zh-cn/guides/kv_cache/)命中需要完整匹配已有的缓存前缀。
-
-### 思考模式与思考强度控制
-支持 DeepSeek 的思考模式和 `reasoning_content`。`停用`关闭思考模式；开启后可选择`轻量`（`low`）、`标准`（`high`，默认）或`深度`（`max`）。
-
-### 继承全部 Copilot 能力
-由于本扩展接入的是 Copilot 的原生 provider API，你免费获得完整能力栈：
-- **Agent 模式**——自主执行多步骤任务
-- **工具调用**——文件编辑、终端操作、工作区搜索、Git、测试
-- **Instructions & Skills**——你的 `.instructions.md`、`AGENTS.md` 和各项 Skills 开箱即用
-- **Prompt 缓存统计**——在输出通道中记录 DeepSeek 缓存命中率，直观看到成本节省
-
-<p align="center">
-  <img src="resources/screenshots/04-agent.png" alt="DeepSeek V4 Pro 运行 Copilot 的 Agent 模式，执行工具调用" width="800">
-</p>
-
-### 官方网页搜索与抓取
-两个内置工具将 Copilot Chat 接入 [DeepSeek 官方 Search / Fetch API](https://api-docs.deepseek.com/zh-cn/guides/search)：
-
-- **`deepseek_web_search`**——返回按相关性排序的网页结果，含标题、URL、日期、站点名、摘要等。行内引用：`#deepseekSearch`。
-- **`deepseek_web_fetch`**——抓取单个网页并返回 Markdown 正文。行内引用：`#deepseekFetch`。
-
-Agent 模式下，模型会在任务需要最新网络信息时自动调用；你也可以通过聊天工具选择器添加，或在提示词中显式写 `#deepseekSearch` / `#deepseekFetch`。两个 API 均按成功请求计费——当前费率请以[官方文档](https://api-docs.deepseek.com/zh-cn/guides/search)与[价格页](https://api-docs.deepseek.com/zh-cn/quick_start/pricing)为准。
-
-说明：
-- 可在设置中搜索 `webTools` 分别关闭搜索或抓取（`webTools.search.enabled` / `webTools.fetch.enabled`）。关闭后工具会从 Copilot Chat 工具列表中隐藏，无法被调用。
-- 自定义 `deepseek-copilot.baseUrl` 时，目标服务需实现 `POST /v1/tools/search` 与 `POST /v1/tools/fetch`。
-- 这两个独立工具适用于本扩展的全部 DeepSeek 模型。Responses API 内置的 `web_search` 工具仅 `deepseek-v4-pro` 支持，且需要将整条对话协议切换到 `/responses`，本扩展未采用该方案。
-- 无论当前选择哪个聊天模型，这两个工具都会使用你配置的 DeepSeek API Key。
-
-### 安全优先
-API Key 存储在 VS Code 的 `SecretStorage` 中（macOS 钥匙串 / Windows 凭据管理器 / Linux 密钥环）。绝不会出现在 `settings.json` 中，也不会被提交到 Git 历史。
-
-### 零运行时依赖
-纯 VS Code API + Node.js 内置模块。无需 Python、Docker 或本地代理进程。
-
-## 快速开始
-
-### 前置条件
-
-- VS Code 1.116 及以上版本。本扩展依赖非公开的 Copilot Chat API，较新的 VS Code 版本可能存在兼容性问题——如遇到请[提交 Issue](https://github.com/FallenstarOwO/deepseek-for-copilot/issues)。
-- GitHub Copilot 订阅（Free / Pro / Enterprise——免费版即可使用）
-- DeepSeek API Key，从 [platform.deepseek.com](https://platform.deepseek.com) 获取；使用自定义 `deepseek-copilot.baseUrl` 时也可使用兼容的 provider token
-
-### 安装方式
-
-以下任选一种方式安装：
-
-1. **Microsoft VS Code** — 从 [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat) 安装。
-2. **手动安装** — 从 [GitHub Releases](https://github.com/FallenstarOwO/deepseek-for-copilot/releases) 下载 `.vsix`，在扩展视图里使用 **从 VSIX 安装...**。
-
-### 使用步骤
-
-1. 通过命令面板（`Cmd+Shift+P`）运行 **DeepSeek: 设置 API Key**
-2. 粘贴你的 Key 或兼容的 provider token（官方 DeepSeek Key 通常以 `sk-` 开头）
-3. 打开 Copilot Chat，点击模型选择器，选择 **DeepSeek V4.1 Flash** 或 **DeepSeek V4 Pro**
-4. 搞定——开始聊天
 
 ## 模型
 
-| 模型入口 | 图片处理 | 思考强度 | 官方 API 状态 |
+| 模型入口 | 图片输入 | 思考层级 | API 模型名 |
 |---|---|---|---|
-| **DeepSeek V4.1 Flash** | 原生图片输入 | `停用` / `轻量` / `标准` / `深度` | 使用模型名 `deepseek-flash` 调用 |
-| **DeepSeek V4 Pro** | 仅文本（不支持图片输入） | `停用` / `轻量` / `标准` / `深度` | 继续提供 API 调用服务，计费方式保持不变 |
+| **DeepSeek V4.1 Flash** | ✅ 原生 | `无` / `低` / `高` / `最大值` | `deepseek-flash` |
+| **DeepSeek V4 Pro** | ❌ 仅文本 | `无` / `低` / `高` / `最大值` | `deepseek-v4-pro` |
 
-两个入口均支持思考模式、工具调用和 1M Token 上下文。计费说明见[模型与价格文档](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)。
+两个入口均支持工具调用与 1M Token 上下文；思考层级在模型选择器中打开该模型的设置面板即可单独调整。计费见[模型与价格](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)。
+
+## 功能
+
+- **继承全部 Copilot 能力**——接入的是 Copilot 原生 provider API，Agent 模式、工具调用、Instructions、MCP、Skills 开箱即用。
+- **思考层级**——支持 `reasoning_content`；`无`关闭思考，`低`（`low`）、`高`（`high`，默认）、`最大值`（`max`）调节推理强度。
+- **原生视觉**——Flash 直接接收图片附件（[上下文缓存](https://api-docs.deepseek.com/zh-cn/guides/kv_cache/)需完整匹配已有前缀）；Pro 仅处理文本。
+- **网页搜索与抓取**——`#deepseekSearch` / `#deepseekFetch`，接入[官方 Search/Fetch API](https://api-docs.deepseek.com/zh-cn/guides/search)，按成功请求计费；可用 `webTools.search.enabled` / `webTools.fetch.enabled` 分别关闭。
+- **OCR 文字识别**——`#deepseekOcr`，接入[官方 OCR API](https://api-docs.deepseek.com/zh-cn/guides/ocr)：给 Pro 补"眼睛"，或从 PDF/Word/PPT/图片提字。**默认关闭**（`ocr.enabled`），按识别页数计费；只处理工作区内或绝对路径的**文件**，聊天中的图片附件不会自动走 OCR。
+- **余额查询**——`DeepSeek: 查询余额` 打开面板（含[用量页](https://platform.deepseek.com/usage)入口）；状态栏同步显示余额，点击即刷新（`statusBar.balance.enabled` / `refreshIntervalMinutes`）。
+- **安全与轻量**——API Key 存于系统密钥链（`SecretStorage`），不会写入 `settings.json`；纯 VS Code API + Node 内置模块，无额外进程。
+
+## 快速开始
+
+**前置条件**：VS Code 1.116+（依赖非公开 Copilot Chat API，较新版本可能不兼容，遇到问题请[提 Issue](https://github.com/FallenstarOwO/deepseek-for-copilot/issues)）、GitHub Copilot 订阅（免费版可用）、[DeepSeek API Key](https://platform.deepseek.com)。
+
+1. **安装**：从 [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat) 安装，或从 [GitHub Releases](https://github.com/FallenstarOwO/deepseek-for-copilot/releases) 下载 `.vsix` 后用 **从 VSIX 安装...**。
+2. **配置 Key**：命令面板运行 **DeepSeek: 设置 API Key**，粘贴 Key（官方 Key 通常以 `sk-` 开头）。
+3. **开聊**：打开 Copilot Chat → 模型选择器 → 选择 **DeepSeek V4.1 Flash** 或 **DeepSeek V4 Pro**。
 
 ## 设置项
 
+以下均省略 `deepseek-copilot.` 前缀。
+
 | 设置项 | 默认值 | 说明 |
 |---|---|---|
-| `deepseek-copilot.baseUrl` | `https://api.deepseek.com` | API 端点——可改为自托管或代理部署地址 |
-| `deepseek-copilot.requestHeaders` | `{}` | 聊天补全请求的自定义请求头。[配置说明](https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/docs/settings/request-headers.zh.md) |
-| `deepseek-copilot.maxTokens` | `0` | 最大输出 Token 数（`0` = API 默认值）。可用于成本控制 |
-| `deepseek-copilot.modelIdOverrides` | 预填官方 ID 映射 | 各 DeepSeek 模型入口对应的 API 模型 ID。仅在使用模型名不同的兼容第三方 API 时修改 |
-| `deepseek-copilot.debugMode` | `minimal` | 诊断模式：`minimal` 仅上报 token 用量，`metadata` 输出隐私安全日志，`verbose` 将完整请求 dump 和 pipeline snapshot 写入扩展 global storage。完整 dump 可能包含敏感提示词文本、工具定义、文件片段和图片附件。使用 `DeepSeek: 打开请求 Dump 目录` 打开 dump 位置 |
-| `deepseek-copilot.experimental.stabilizeToolList` | `false` | 实验性设置。尝试预先激活 VS Code/Copilot 的虚拟工具，让传给 DeepSeek API 的 `tools` 参数在多轮对话中更完整、更稳定。当已启用工具跨轮次变化时，可能提高上下文缓存命中率。代价是 input tokens 可能增加；缓存命中的 input tokens 单价更低，但仍会计入用量。64 个或更少已启用工具时通常无需开启，除非工具列表仍在跨轮次变化 |
+| `baseUrl` | `https://api.deepseek.com` | API 端点，可指向自托管/代理。**仅用户（machine）级生效**：工作区设置被忽略，防止恶意仓库把 Key 引向第三方 |
+| `requestHeaders` | `{}` | 自定义请求头，同样**仅用户级生效**。[说明](https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/docs/settings/request-headers.zh.md) |
+| `maxTokens` | `0` | 最大输出 Token（`0` = API 默认），可用于成本控制 |
+| `modelIdOverrides` | 官方 ID 映射 | 各模型入口对应的 API 模型 ID，仅在兼容第三方 API 时修改 |
+| `debugMode` | `minimal` | `minimal` 仅上报用量；`metadata` 输出隐私安全日志；`verbose` 把完整请求写入磁盘（**含敏感提示词**） |
+| `experimental.stabilizeToolList` | `false` | 稳定 `tools` 列表以提高缓存命中；工具定义增多会增加 input tokens，64 个以内通常无需开启 |
 
-思考强度可通过 Copilot Chat 的模型选择器对每个 DeepSeek 模型单独设置。
+其余开关：`webTools.search.enabled` / `webTools.fetch.enabled`（默认开）、`ocr.enabled`（默认关）、`statusBar.balance.enabled` / `statusBar.balance.refreshIntervalMinutes`（默认开 / 5 分钟）。
 
-兼容 API 代理的 `settings.json` 配置示例：
+自定义 `baseUrl` 时，目标服务需实现所需接口：`POST /v1/tools/search`、`POST /v1/tools/fetch`、`POST /v1/tools/ocr`、`GET /user/balance`。这些工具始终使用你配置的 DeepSeek API Key，与当前选中的聊天模型无关。
+
+兼容代理的 `settings.json` 示例：
 
 ```json
 {
@@ -134,38 +81,8 @@ API Key 存储在 VS Code 的 `SecretStorage` 中（macOS 钥匙串 / Windows �
 
 ## 已知问题
 
-### Agents 窗口的 Cloud 会话中看不到 DeepSeek 模型
-
-Agents 窗口的输入框可以切换会话类型。**Cloud** 会话在 GitHub 托管的沙箱里运行，模型清单由服务端解析，因此只有一个 `Auto` —— 第三方 BYOK 模型无法在其中使用，任何扩展设置都改变不了这一点。
-
-请改用本地的 **Copilot** 会话类型：那里的模型选择器会把 `deepseek/deepseek-flash` 和 `deepseek/deepseek-v4-pro` 与其他 BYOK 提供方并列列出。`chat.agentHost.byokModels.enabled` 决定扩展提供的 BYOK 模型能否在 agent-host 会话中使用，在 VS Code 1.146 中默认为 `true`，一般无需手动设置；更早的版本需要显式开启。
-
-```json
-{
-  "chat.agentHost.byokModels.enabled": true
-}
-```
-
-### 已解决：Agents 窗口不再需要先打开编辑器窗口（VS Code 1.146 / 扩展 1.0.0 起）
-
-早期版本里 agent host 是从**正在运行的 VS Code 扩展宿主**桥接 BYOK 模型的，所以必须先在编辑器窗口加载本扩展才能在 Agents 窗口看到 DeepSeek 模型；关掉最后一个编辑器窗口后模型也会消失。
-
-从 **VS Code 1.146** 起，声明了 `"capabilities": { "agentsWindow": { "supported": true } }` 的扩展会被 Agents 窗口默认加载，原先的实验开关 `extensions.experimental.enableAgentsWindowCapability` 已被移除。本扩展自 **1.0.0** 起已声明该能力；实测 **扩展 1.1.1 + VS Code 1.146.0**：只保留 Agents 窗口、不打开任何编辑器窗口时，扩展仍会在该窗口内激活（激活事件 `onLanguageModelChatProvider:deepseek`），对话、工具调用与内置搜索工具均正常。
-
-因此 `extensions.supportAgentsWindow` 的逐扩展覆盖已不再需要，可以从设置中删除：
-
-```json
-// 旧版 VS Code 的临时配置，现已不需要
-{
-  "extensions.supportAgentsWindow": {
-    "fallenstarowo.deepseek-for-copilot-chat": true
-  }
-}
-```
-
-在 VS Code 1.146 之前的版本上，仍需 `extensions.supportAgentsWindow`（或 1.143 / 1.144 的 `extensions.experimental.enableAgentsWindowCapability`）才能让扩展在 Agents 窗口内运行。
-
-关于激活顺序：扩展在激活阶段同步注册 provider，并在 Copilot Chat 激活完成后刷新模型列表，因此 Copilot 启动较慢时模型选择器不会长时间为空。
+- **Agents 窗口的 Cloud 会话看不到 DeepSeek 模型**：Cloud 会话在 GitHub 沙箱运行且模型清单由服务端解析，第三方 BYOK 无法使用，任何设置都改变不了。请改用本地 **Copilot** 会话类型；`chat.agentHost.byokModels.enabled` 在 VS Code 1.146 默认 `true`，更早版本需显式开启。
+- **Agents 窗口激活**：VS Code 1.146 起，声明 `capabilities.agentsWindow.supported` 的扩展由 Agents 窗口默认加载（本扩展自 1.0.0 起已声明），`extensions.supportAgentsWindow` 不再需要；更早版本仍需该设置。
 
 ## 方案对比
 
@@ -178,14 +95,8 @@ Agents 窗口的输入框可以切换会话类型。**Cloud** 会话在 GitHub �
 | 一键安装 | ✅ | ❌ | ✅ |
 | API Key 存系统密钥链 | ✅ | ❌ | ⚠️ 各异 |
 
-## 致谢
+## 致谢与许可证
 
-本项目是 **Vizards** 的 **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** 的社区分支。Provider 实现、i18n 脚手架以及绝大部分架构均来自该项目——没有上游的工作，就不会有这个分支。上游以 MIT 许可证发布，其版权声明完整保留在 [LICENSE](LICENSE) 中，并随每个构建产物一同分发。
-
-同时感谢上游的贡献者，以及在那里提交 Issue 和 PR 的每一位——本分支的功能直接建立在他们的工作之上。
-
-本分支新增了 DeepSeek 网页搜索与网页抓取工具，并独立发布，以便这些改动在上游评审期间也能使用。
-
-## 许可证
+本项目是 **Vizards** 的 [deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot) 社区分支：provider 实现、i18n 脚手架与大部分架构均来自上游，MIT 许可证与原始版权声明完整保留在 [LICENSE](LICENSE) 并随构建产物分发。本分支新增网页搜索/抓取、OCR、余额查询与面板，以及流式错误处理与凭据边界加固。
 
 [MIT](LICENSE)

@@ -14,112 +14,59 @@
   English
 </p>
 
-**Pick DeepSeek V4 from the Copilot Chat model picker — and keep everything else Copilot already gives you.**
+**Pick DeepSeek V4 from the Copilot Chat model picker — and keep agent mode, tool calling, and skills exactly as they are.**
 
 > **Unofficial community fork.** Published by `fallenstarowo` from [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot). Not affiliated with or endorsed by the original author of [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot); the MIT license and original copyright notices are retained. Both extensions register the same `deepseek` model vendor, so **uninstall the official extension before installing this one**.
 
 <p align="center">
-  <img src="resources/screenshots/01-picker.png" alt="The DeepSeek group in the Copilot Chat model picker, listing DeepSeek V4 Pro and DeepSeek V4.1 Flash with the Max 1M thinking effort" width="798">
+  <img src="resources/screenshots/01-picker.png" alt="The DeepSeek group in the Copilot Chat model picker, listing DeepSeek V4 Pro and DeepSeek V4.1 Flash" width="798">
 </p>
-
-Love DeepSeek's price-performance but don't want to give up GitHub Copilot's agent mode, tool calling, and polished UI? This extension adds **DeepSeek V4.1 Flash and other DeepSeek models** to the Copilot Chat model selector — with **native vision**, **thinking mode**, and your own API key.
-
-## Why this extension?
-
-- **Don't replace Copilot — power it up.** No new sidebar, no new chat UI to learn. Just a new model in the picker you already use.
-- **Agent mode, tool calling, instructions, MCP, skills — all of it still works.** Copilot's entire stack, now running on DeepSeek.
-- **Native image input.** V4.1 Flash receives image attachments natively; V4 Pro is text-only.
-- **BYOK, pay DeepSeek directly.** Your API key, your bill, your rate limits. Stored in the OS keychain, never on disk.
-
-## Features
-
-### DeepSeek models in the model picker
-The picker includes V4.1 Flash and V4 Pro, with long context, tool calling, and configurable thinking effort.
-
-### Native Vision
-**DeepSeek V4.1 Flash** handles image attachments natively: images are sent to the API together with the conversation. **DeepSeek V4 Pro** does not accept image input and works with text only.
-
-[Context caching](https://api-docs.deepseek.com/guides/kv_cache/) requires a full match with a cached prefix.
-
-### Thinking Mode and Effort Control
-Supports DeepSeek's thinking mode and `reasoning_content`. `none` disables thinking mode; `low`, `high` (default), and `max` set the thinking effort.
-
-### Inherits Every Copilot Capability
-Because this plugs into Copilot's native provider API, you get the full stack for free:
-- **Agent mode** — autonomous multi-step tasks
-- **Tool calling** — file edits, terminal, workspace search, Git, tests
-- **Instructions & skills** — all your `.instructions.md`, `AGENTS.md`, and skills just work
-- **Prompt caching stats** — DeepSeek's cache hit rate logged in the output channel so you can see the savings
-
-<p align="center">
-  <img src="resources/screenshots/04-agent.png" alt="DeepSeek V4 Pro running Copilot's agent mode with tool calls" width="800">
-</p>
-
-### Web Search and Fetch
-Two built-in tools plug Copilot Chat into the official [DeepSeek Search and Fetch APIs](https://api-docs.deepseek.com/guides/search):
-
-- **`deepseek_web_search`** — ranked web results with title, URL, date, site name, summary, and more. Inline reference: `#deepseekSearch`.
-- **`deepseek_web_fetch`** — fetches one page and returns clean Markdown. Inline reference: `#deepseekFetch`.
-
-In agent mode the model calls them automatically when a task needs fresh web information. You can also add them via the chat tools picker, or mention `#deepseekSearch` / `#deepseekFetch` explicitly. Both APIs bill per successful request — see the [official docs](https://api-docs.deepseek.com/guides/search) and the [pricing page](https://api-docs.deepseek.com/quick_start/pricing) for current rates.
-
-Notes:
-- Each tool can be disabled independently in Settings (search for `webTools`; keys: `webTools.search.enabled` / `webTools.fetch.enabled`). Disabled tools are hidden from Copilot Chat and cannot be called.
-- When `deepseek-copilot.baseUrl` is customized, the target service must implement `POST /v1/tools/search` and `POST /v1/tools/fetch`.
-- These standalone tools work with every DeepSeek model in this extension. The Responses API's built-in `web_search` tool is only available on `deepseek-v4-pro` and requires switching the whole chat protocol to `/responses`, which this extension does not do.
-- The tools always use your configured DeepSeek API key, even when another chat model is selected.
-
-### Secure by Default
-API key lives in VS Code's `SecretStorage` (OS keychain on macOS / Windows / Linux). Never in `settings.json`, never in your Git history.
-
-### Zero Runtime Dependencies
-Pure VS Code API + Node.js built-ins. No Python, no Docker, no local proxy server to babysit.
-
-## Getting Started
-
-### Prerequisites
-
-- VS Code 1.116 or later. This extension relies on non-public Copilot Chat APIs that may break on newer VS Code versions — [report an issue](https://github.com/FallenstarOwO/deepseek-for-copilot/issues) if you hit one.
-- GitHub Copilot subscription (Free / Pro / Enterprise — the free tier works)
-- DeepSeek API key from [platform.deepseek.com](https://platform.deepseek.com), or a compatible provider token when using a custom `deepseek-copilot.baseUrl`
-
-### Installation
-
-Install it in one of these ways:
-
-1. **Microsoft VS Code** — install from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat).
-2. **Manual install** — download the `.vsix` from [GitHub Releases](https://github.com/FallenstarOwO/deepseek-for-copilot/releases) and use **Install from VSIX...** in the Extensions view.
-
-### Usage
-
-1. Run **DeepSeek: Set API Key** from the Command Palette (`Cmd+Shift+P`)
-2. Paste your key or compatible provider token (official DeepSeek keys usually start with `sk-`)
-3. Open Copilot Chat, click the model picker, and choose **DeepSeek V4.1 Flash** or **DeepSeek V4 Pro**
-4. That's it — chat away
 
 ## Models
 
-| Model Entry | Image Handling | Thinking Effort | Official API Status |
+| Model entry | Image input | Thinking level | API model ID |
 |---|---|---|---|
-| **DeepSeek V4.1 Flash** | Native image input | `none` / `low` / `high` / `max` | Available via `deepseek-flash` |
-| **DeepSeek V4 Pro** | Text only (no image input) | `none` / `low` / `high` / `max` | API services continue; billing method unchanged |
+| **DeepSeek V4.1 Flash** | ✅ native | `None` / `Low` / `High` / `Maximum` | `deepseek-flash` |
+| **DeepSeek V4 Pro** | ❌ text only | `None` / `Low` / `High` / `Maximum` | `deepseek-v4-pro` |
 
-Both entries support thinking mode, tool calling, and 1M token context. See the official [Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) documentation for billing details.
+Both support tool calling and a 1M token context; the thinking level is set per model from the settings pane in the model picker. See [Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) for billing.
+
+## Features
+
+- **Inherits every Copilot capability** — agent mode, tool calling, instructions, MCP, and skills work as-is, because this plugs into Copilot's native provider API.
+- **Thinking level** — `reasoning_content` is supported. `None` disables thinking; `Low` (`low`), `High` (`high`, default), and `Maximum` (`max`) set the reasoning depth.
+- **Native vision** — Flash accepts image attachments directly ([context caching](https://api-docs.deepseek.com/guides/kv_cache/) needs an exact prefix match); Pro is text-only.
+- **Web search and fetch** — `#deepseekSearch` / `#deepseekFetch` via the official [Search/Fetch APIs](https://api-docs.deepseek.com/guides/search). Billed per successful request; disable individually with `webTools.search.enabled` / `webTools.fetch.enabled`.
+- **OCR** — `#deepseekOcr` via the official [OCR API](https://api-docs.deepseek.com/guides/ocr): gives Pro eyes, or extracts text from PDF/Word/PowerPoint/images. **Off by default** (`ocr.enabled`), billed per recognized page, and only processes **files** (workspace-relative or absolute); chat image attachments are not routed through OCR automatically.
+- **Balance** — `DeepSeek: Check Balance` opens a panel (with a link to the [usage page](https://platform.deepseek.com/usage)); the status bar mirrors the balance and refreshes on click (`statusBar.balance.enabled` / `refreshIntervalMinutes`).
+- **Secure and lightweight** — the API key lives in the OS keychain (`SecretStorage`), never in `settings.json`; pure VS Code API + Node built-ins, no extra process.
+
+## Getting Started
+
+**Prerequisites**: VS Code 1.116+ (this relies on non-public Copilot Chat APIs that may break on newer releases — [report an issue](https://github.com/FallenstarOwO/deepseek-for-copilot/issues) if you hit one), a GitHub Copilot subscription (the free tier works), and a [DeepSeek API key](https://platform.deepseek.com).
+
+1. **Install** from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=fallenstarowo.deepseek-for-copilot-chat), or download the `.vsix` from [GitHub Releases](https://github.com/FallenstarOwO/deepseek-for-copilot/releases) and use **Install from VSIX...**.
+2. **Set the key**: run **DeepSeek: Set API Key** from the Command Palette and paste your key (official keys usually start with `sk-`).
+3. **Chat**: open Copilot Chat, click the model picker, and choose **DeepSeek V4.1 Flash** or **DeepSeek V4 Pro**.
 
 ## Settings
 
+All keys are prefixed with `deepseek-copilot.`.
+
 | Setting | Default | Description |
 |---|---|---|
-| `deepseek-copilot.baseUrl` | `https://api.deepseek.com` | API endpoint — change for self-hosted / proxied deployments |
-| `deepseek-copilot.requestHeaders` | `{}` | Custom headers for chat completions. [Configuration guide](https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/docs/settings/request-headers.en.md) |
-| `deepseek-copilot.maxTokens` | `0` | Max output tokens (`0` = API default). Useful for cost control |
-| `deepseek-copilot.modelIdOverrides` | prefilled official ID map | API model IDs to send for each DeepSeek model entry. Change only for compatible third-party APIs with different model names |
-| `deepseek-copilot.debugMode` | `minimal` | Diagnostic mode: `minimal` for token usage only, `metadata` for privacy-preserving logs, or `verbose` for full request dumps and pipeline snapshots under extension global storage. Full dumps may include sensitive prompt text, tool schemas, file snippets, and image attachments. Use `DeepSeek: Open Request Dumps Folder` to open the dump location |
-| `deepseek-copilot.experimental.stabilizeToolList` | `false` | Experimental. Tries to pre-activate VS Code/Copilot virtual tools so the DeepSeek API `tools` parameter is more complete and stable across turns. May improve context-cache hit rate when enabled tools change between turns. Can increase input tokens because more function definitions may be included; cache-hit input tokens are cheaper but still count toward usage. Usually leave it off with 64 or fewer enabled tools unless the tool list still changes across turns |
+| `baseUrl` | `https://api.deepseek.com` | API endpoint for self-hosted or proxied deployments. **User (machine) scope only** — workspace settings are ignored so a malicious repository cannot redirect your API key |
+| `requestHeaders` | `{}` | Custom request headers, also **user scope only**. [Guide](https://github.com/Vizards/deepseek-v4-for-copilot/blob/main/docs/settings/request-headers.en.md) |
+| `maxTokens` | `0` | Max output tokens (`0` = API default). Useful for cost control |
+| `modelIdOverrides` | official ID map | API model IDs sent for each model entry; change only for compatible third-party APIs |
+| `debugMode` | `minimal` | `minimal` reports usage only; `metadata` logs privacy-safe diagnostics; `verbose` writes full request dumps to disk (**contains sensitive prompt text**) |
+| `experimental.stabilizeToolList` | `false` | Stabilizes the `tools` list to improve cache hits; more function definitions increase input tokens. Usually unnecessary with 64 or fewer tools |
 
-Thinking Effort is configured from Copilot Chat's model picker for each DeepSeek model.
+Other switches: `webTools.search.enabled` / `webTools.fetch.enabled` (on), `ocr.enabled` (off), `statusBar.balance.enabled` / `statusBar.balance.refreshIntervalMinutes` (on / 5 minutes).
 
-Example `settings.json` override for compatible API proxies:
+With a custom `baseUrl`, the target service must implement the endpoints you use: `POST /v1/tools/search`, `POST /v1/tools/fetch`, `POST /v1/tools/ocr`, and `GET /user/balance`. These tools always use your configured DeepSeek API key, regardless of the selected chat model.
+
+Example `settings.json` for a compatible API proxy:
 
 ```json
 {
@@ -132,38 +79,8 @@ Example `settings.json` override for compatible API proxies:
 
 ## Known Issues
 
-### DeepSeek models are missing from Cloud sessions in the Agents window
-
-The Agents window composer offers several session kinds. **Cloud** sessions (`Copilot` → `Cloud`) run in a GitHub-hosted sandbox and resolve their model list server-side, so the only entry is `Auto` — third-party BYOK models cannot be used there, and no extension setting changes that.
-
-Pick the local **Copilot** session type instead: the model picker there lists `deepseek/deepseek-flash` and `deepseek/deepseek-v4-pro` alongside your other BYOK providers. `chat.agentHost.byokModels.enabled` controls whether extension-provided BYOK models can run in agent-host sessions; it defaults to `true` in VS Code 1.146, so you normally do not need to set it. Older releases require enabling it explicitly.
-
-```json
-{
-  "chat.agentHost.byokModels.enabled": true
-}
-```
-
-### Resolved: the Agents window no longer requires an editor window first (VS Code 1.146 / extension 1.0.0 and later)
-
-In earlier releases the agent host bridged BYOK models from a **running VS Code extension host**, so the extension had to be loaded in an editor window before the DeepSeek models showed up in the Agents window — and they disappeared once the last editor window closed.
-
-Starting with **VS Code 1.146**, an extension that declares `"capabilities": { "agentsWindow": { "supported": true } }` is loaded by the Agents window by default, and the former `extensions.experimental.enableAgentsWindowCapability` gate has been removed. This extension has declared that capability since **1.0.0**. Verified with **extension 1.1.1 + VS Code 1.146.0**: with only the Agents window open and no editor window, the extension still activates inside that window (activation event `onLanguageModelChatProvider:deepseek`), and chat, tool calls, and the built-in search tools all work.
-
-The per-extension `extensions.supportAgentsWindow` override is therefore redundant and can be removed from your settings:
-
-```json
-// Old workaround for earlier VS Code releases; no longer needed
-{
-  "extensions.supportAgentsWindow": {
-    "fallenstarowo.deepseek-for-copilot-chat": true
-  }
-}
-```
-
-On VS Code versions before 1.146, `extensions.supportAgentsWindow` (or `extensions.experimental.enableAgentsWindowCapability` on 1.143 / 1.144) is still required for the extension to run inside the Agents window.
-
-Note on activation order: the extension registers its provider synchronously during activation and refreshes the model list after Copilot Chat finishes activating, so a slow Copilot startup does not leave the picker empty.
+- **Cloud sessions in the Agents window have no DeepSeek models**: Cloud sessions run in a GitHub-hosted sandbox and resolve models server-side, so third-party BYOK models cannot be used there and no setting changes that. Use the local **Copilot** session type instead; `chat.agentHost.byokModels.enabled` defaults to `true` in VS Code 1.146 and must be enabled explicitly on older releases.
+- **Agents window activation**: since VS Code 1.146, extensions declaring `capabilities.agentsWindow.supported` are loaded by the Agents window by default (declared here since 1.0.0), so `extensions.supportAgentsWindow` is no longer needed. Earlier releases still require it.
 
 ## Compared to alternatives
 
@@ -176,14 +93,8 @@ Note on activation order: the extension registers its provider synchronously dur
 | One-click install | ✅ | ❌ | ✅ |
 | API key in OS keychain | ✅ | ❌ | ⚠️ varies |
 
-## Acknowledgements
+## Acknowledgements & License
 
-This project is a community fork of **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** by **Vizards**. The provider implementation, the i18n scaffolding, and most of the architecture come from that project — this fork would not exist without it. The upstream work is MIT licensed, and its copyright notice is preserved in [LICENSE](LICENSE) and shipped with every build.
-
-Thanks also to the upstream contributors and everyone who reported issues or sent pull requests there; the features in this fork build directly on that groundwork.
-
-This fork adds DeepSeek web search and web fetch tools, and publishes independently so those changes stay available while they are under review upstream.
-
-## License
+A community fork of **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** by **Vizards**: the provider implementation, i18n scaffolding, and most of the architecture come from upstream, with the MIT license and copyright notice preserved in [LICENSE](LICENSE) and shipped with every build. This fork adds web search/fetch tools, OCR, the balance panel and status bar, plus stream error handling and credential-boundary hardening.
 
 [MIT](LICENSE)

@@ -6,9 +6,19 @@ import type {
 	DeepSeekTool,
 	DeepSeekToolCall,
 } from '../types';
-import { parseFirstReplayMarker } from './replay';
+import { parseFirstReplayMarker, REPLAY_MARKER_MIME } from './replay';
+import { mapRole } from './roles';
 
 const IMAGE_OMITTED_NOTICE = '[Image omitted: the selected model does not support image input]';
+
+/**
+ * Shown to the model when a non-image attachment (for example a PDF or Word
+ * document) is dropped. Unlike images, the API has no document content part,
+ * so silently discarding it would make the model answer as if nothing was
+ * attached. The notice names the remedy so the model can relay it.
+ */
+const DOCUMENT_OMITTED_NOTICE =
+	'[File omitted: non-image file attachments are not sent to the model. To read a document, ask the user to enable "deepseek-copilot.ocr.enabled" in Settings and pass the file path to the #deepseekOcr tool, or convert the document to text and attach that instead.]';
 
 /**
  * Convert VS Code chat messages to DeepSeek format.
@@ -29,6 +39,7 @@ export function convertMessages(
 		let thinkingContent = '';
 		const toolCalls: DeepSeekToolCall[] = [];
 		const toolResults: NormalizedToolResult[] = [];
+		let documentOmitted = false;
 
 		for (const part of message.content) {
 			if (part instanceof vscode.LanguageModelTextPart) {
@@ -53,6 +64,10 @@ export function convertMessages(
 				// Text-only models cannot receive the image bytes; keep a visible
 				// placeholder so the user message itself is not dropped.
 				content += (content ? '\n' : '') + IMAGE_OMITTED_NOTICE;
+			} else if (role === 'user' && isNonImageDataPart(part)) {
+				// There is no document content part in the API; flag the attachment
+				// so the model never answers as if nothing was sent.
+				documentOmitted = true;
 			} else if (isLanguageModelThinkingPart(part)) {
 				thinkingContent += normalizeThinkingPartText(part.value);
 			} else if (part instanceof vscode.LanguageModelToolCallPart) {
@@ -66,6 +81,15 @@ export function convertMessages(
 				});
 			} else if (part instanceof vscode.LanguageModelToolResultPart) {
 				toolResults.push(normalizeToolResult(part));
+			}
+		}
+
+		if (documentOmitted) {
+			content += (content ? '\n' : '') + DOCUMENT_OMITTED_NOTICE;
+			if (imageInput && role === 'user') {
+				// Vision-capable user messages are sent as a content-part array, so
+				// the plain string above is discarded — mirror the notice there.
+				nativeVisionContentParts.push({ type: 'text', text: DOCUMENT_OMITTED_NOTICE });
 			}
 		}
 
@@ -87,6 +111,13 @@ export function convertMessages(
 
 				result.push(msg);
 			}
+		} else if (role === 'system') {
+			if (content) {
+				result.push({
+					role: 'system',
+					content,
+				});
+			}
 		} else {
 			if (imageInput && role === 'user' && nativeVisionContentParts.length > 0) {
 				result.push({
@@ -95,7 +126,7 @@ export function convertMessages(
 				});
 			} else if (content) {
 				result.push({
-					role: role as 'user' | 'assistant',
+					role: role as 'user',
 					content: content,
 				});
 			}
@@ -123,46 +154,56 @@ function convertToolResultContent(
 	imageInput: boolean,
 ): DeepSeekMessage['content'] {
 	const hasImages = toolResult.parts.some((part) => part.type === 'image');
-	if (!imageInput || !hasImages) {
-		const text = toolResult.parts
-			.filter((part) => part.type === 'text')
-			.map((part) => part.text)
-			.join('');
-		if (!imageInput && hasImages) {
-			// Tool messages must never carry empty content: append the omission notice
-			// to whatever text survives, or emit the notice on its own.
-			if (text) {
-				return `${text}\n${IMAGE_OMITTED_NOTICE}`;
+	if (imageInput && hasImages) {
+		const content: DeepSeekContentPart[] = [];
+		let omittedNonImageData = false;
+		for (const part of toolResult.parts) {
+			if (part.type === 'text') {
+				content.push({ type: 'text', text: part.text });
+			} else if (part.type === 'image') {
+				content.push({
+					type: 'image_url',
+					image_url: { url: toImageDataUrl(part) },
+				});
+			} else if (isNonImageDataPart(part.value)) {
+				omittedNonImageData = true;
 			}
-			const fallbackContent = toolResult.parts
-				.filter((part) => part.type === 'other')
-				.map((part) => part.value);
-			return fallbackContent.length > 0
-				? `${safeStringify(fallbackContent)}\n${IMAGE_OMITTED_NOTICE}`
-				: IMAGE_OMITTED_NOTICE;
 		}
-		if (text) {
-			return text;
+		if (omittedNonImageData) {
+			// Tool messages must carry content; surface the omission so the model
+			// does not assume the tool returned nothing for the attachment.
+			content.push({ type: 'text', text: DOCUMENT_OMITTED_NOTICE });
 		}
-
-		// Image bytes never enter a text-only model request; genuinely non-image
-		// tool-result content keeps the original fallback serialization.
-		const fallbackContent = toolResult.originalContent;
-		return fallbackContent.length > 0 ? safeStringify(fallbackContent) : '';
+		return content;
 	}
 
-	const content: DeepSeekContentPart[] = [];
-	for (const part of toolResult.parts) {
-		if (part.type === 'text') {
-			content.push({ type: 'text', text: part.text });
-		} else if (part.type === 'image') {
-			content.push({
-				type: 'image_url',
-				image_url: { url: toImageDataUrl(part) },
-			});
-		}
+	const text = toolResult.parts
+		.filter((part) => part.type === 'text')
+		.map((part) => part.text)
+		.join('');
+	const notices: string[] = [];
+	if (!imageInput && hasImages) {
+		notices.push(IMAGE_OMITTED_NOTICE);
 	}
-	return content;
+	if (toolResult.parts.some((part) => part.type === 'other' && isNonImageDataPart(part.value))) {
+		notices.push(DOCUMENT_OMITTED_NOTICE);
+	}
+	const noticeSuffix = notices.join('\n');
+
+	if (text) {
+		return noticeSuffix ? `${text}\n${noticeSuffix}` : text;
+	}
+
+	// Serialize only non-binary content: a LanguageModelDataPart would otherwise
+	// be JSON-stringified into the prompt, shipping raw file bytes as text.
+	const serializable = toolResult.originalContent.filter(
+		(part) => !(part instanceof vscode.LanguageModelDataPart),
+	);
+	const fallback = serializable.length > 0 ? safeStringify(serializable) : '';
+	if (fallback) {
+		return noticeSuffix ? `${fallback}\n${noticeSuffix}` : fallback;
+	}
+	return noticeSuffix;
 }
 
 function getReasoningContent(
@@ -186,16 +227,8 @@ function normalizeThinkingPartText(value: string | string[]): string {
 	return Array.isArray(value) ? value.join('') : value;
 }
 
-function mapRole(role: vscode.LanguageModelChatMessageRole): 'user' | 'assistant' {
-	switch (role) {
-		case vscode.LanguageModelChatMessageRole.User:
-			return 'user';
-		case vscode.LanguageModelChatMessageRole.Assistant:
-			return 'assistant';
-		default:
-			return 'user';
-	}
-}
+// VS Code's internal System role (3) is not exposed in the public enum.
+// mapRole now lives in ./roles (runtime-vscode-free) for unit testing.
 
 /**
  * Convert VS Code tool definitions to DeepSeek format.
@@ -315,6 +348,16 @@ export function normalizeToolResult(
 export function isImageDataPart(part: unknown): part is vscode.LanguageModelDataPart {
 	return (
 		part instanceof vscode.LanguageModelDataPart && part.mimeType.toLowerCase().startsWith('image/')
+	);
+}
+
+/** Attachment data parts the API cannot represent (documents, archives, …). */
+function isNonImageDataPart(part: unknown): part is vscode.LanguageModelDataPart {
+	return (
+		part instanceof vscode.LanguageModelDataPart &&
+		!part.mimeType.toLowerCase().startsWith('image/') &&
+		// Extension-owned replay markers are not user attachments.
+		part.mimeType !== REPLAY_MARKER_MIME
 	);
 }
 

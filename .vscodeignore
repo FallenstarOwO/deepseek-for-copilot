@@ -6,6 +6,7 @@ src/**
 out/**/*.map
 out/**/*.d.ts
 out/**/*.d.ts.map
+out/test/**
 tsconfig.json
 .github/**
 .gitignore

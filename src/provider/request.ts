@@ -67,6 +67,14 @@ export async function prepareChatRequest({
 	const deepseekMessages = convertMessages(messages, isThinkingModel, imageInput);
 	const tools = prepareRequestTools(modelDef?.capabilities.toolCalling, options);
 
+	// Honor the host's tool mode; DeepSeek rejects tool_choice=required in thinking
+	// mode, so that combination forces thinking off below.
+	const toolModeRequired =
+		(options as { toolMode?: vscode.LanguageModelChatToolMode }).toolMode ===
+		vscode.LanguageModelChatToolMode.Required;
+	const toolChoice =
+		tools && tools.length > 0 ? (toolModeRequired ? 'required' : 'auto') : undefined;
+
 	const totalRequestChars = countMessageChars(deepseekMessages);
 	const hasNativeImages = hasImageParts(deepseekMessages);
 
@@ -75,7 +83,7 @@ export async function prepareChatRequest({
 		messages: deepseekMessages,
 		stream: true,
 		tools,
-		tool_choice: tools && tools.length > 0 ? ('auto' as const) : undefined,
+		tool_choice: toolChoice,
 		max_tokens: maxTokens,
 	};
 	const requestKind = classifyDeepSeekRequest({
@@ -88,7 +96,8 @@ export async function prepareChatRequest({
 	// Only force helper requests into disabled thinking on the official API.
 	// Custom endpoints keep their configured effort to preserve pre-#137 request shape.
 	const forceNoneThinking =
-		shouldForceThinkingNone(requestKind) && isOfficialDeepSeekBaseUrl(baseUrl);
+		(shouldForceThinkingNone(requestKind) && isOfficialDeepSeekBaseUrl(baseUrl)) ||
+		toolModeRequired;
 	const thinkingEffort = forceNoneThinking ? 'none' : configuredThinkingEffort;
 	const request: DeepSeekRequest = {
 		...baseRequest,

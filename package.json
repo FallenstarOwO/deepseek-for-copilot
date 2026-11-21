@@ -134,6 +134,44 @@
             }
           }
         }
+      },
+      {
+        "name": "deepseek_ocr",
+        "displayName": "%deepseek-copilot.tool.ocr.displayName%",
+        "userDescription": "%deepseek-copilot.tool.ocr.userDescription%",
+        "modelDescription": "%deepseek-copilot.tool.ocr.modelDescription%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "deepseekOcr",
+        "when": "config.deepseek-copilot.ocr.enabled",
+        "icon": "$(eye)",
+        "tags": [
+          "ocr",
+          "vision",
+          "deepseek"
+        ],
+        "inputSchema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path"
+          ],
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Path to the file to recognize: workspace-relative or absolute. Supported: PDF, DOC, DOCX, PPT, PPTX, PNG, JPEG, WebP, GIF, BMP, TIFF. Max 100 MiB and 1000 pages."
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "text_recognition",
+                "rich_layout_recognition"
+              ],
+              "default": "text_recognition",
+              "description": "text_recognition extracts plain text page by page (faster; image-free Word/PPT documents are extracted directly). rich_layout_recognition recognizes every page with layout, keeping ref/box coordinate markers normalized to 0-1000."
+            }
+          }
+        }
       }
     ],
     "commands": [
@@ -148,6 +186,10 @@
       {
         "command": "deepseek-copilot.clearApiKey",
         "title": "%deepseek-copilot.command.clearApiKey%"
+      },
+      {
+        "command": "deepseek-copilot.showBalance",
+        "title": "%deepseek-copilot.command.showBalance%"
       },
       {
         "command": "deepseek-copilot.resetBaseUrl",
@@ -208,6 +250,7 @@
         "deepseek-copilot.baseUrl": {
           "type": "string",
           "default": "https://api.deepseek.com",
+          "scope": "machine",
           "markdownDescription": "%deepseek-copilot.config.baseUrl.description%"
         },
         "deepseek-copilot.maxTokens": {
@@ -215,6 +258,17 @@
           "default": 0,
           "minimum": 0,
           "description": "%deepseek-copilot.config.maxTokens.description%"
+        },
+        "deepseek-copilot.statusBar.balance.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "%deepseek-copilot.config.statusBar.balance.enabled.description%"
+        },
+        "deepseek-copilot.statusBar.balance.refreshIntervalMinutes": {
+          "type": "number",
+          "default": 5,
+          "minimum": 5,
+          "description": "%deepseek-copilot.config.statusBar.balance.refreshIntervalMinutes.description%"
         },
         "deepseek-copilot.webTools.search.enabled": {
           "type": "boolean",
@@ -226,9 +280,16 @@
           "default": true,
           "markdownDescription": "%deepseek-copilot.config.webTools.fetch.enabled.description%"
         },
+        "deepseek-copilot.ocr.enabled": {
+          "type": "boolean",
+          "default": false,
+          "scope": "machine",
+          "markdownDescription": "%deepseek-copilot.config.ocr.enabled.description%"
+        },
         "deepseek-copilot.requestHeaders": {
           "type": "object",
           "default": {},
+          "scope": "machine",
           "additionalProperties": {
             "type": "string"
           },
@@ -289,6 +350,7 @@
     "vscode:prepublish": "bash .github/scripts/prepare-marketplace-readme.sh && npm run compile",
     "compile": "npm run clean && tsc -p ./",
     "watch": "npm run clean && tsc -watch -p ./",
+    "test": "node --test \"out/test/**/*.test.js\"",
     "lint": "oxlint",
     "format": "oxfmt --write src/",
     "format:check": "oxfmt --check src/",
