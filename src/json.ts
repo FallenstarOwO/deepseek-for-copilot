@@ -30,3 +30,53 @@ export function toWellFormedString(value: string): string {
 		pair ? pair : REPLACEMENT_CHARACTER,
 	);
 }
+
+/**
+ * Escape raw control characters that appear inside JSON string literals.
+ *
+ * Providers occasionally stream real newlines or tabs inside strings, which
+ * makes an otherwise complete JSON payload unparsable. Escaping them is
+ * lossless: the decoded string keeps the same characters.
+ */
+export function escapeControlCharactersInStrings(text: string): string {
+	let result = '';
+	let inString = false;
+	let escaped = false;
+
+	for (const char of text) {
+		if (inString) {
+			const codePoint = char.codePointAt(0) ?? 0;
+			if (escaped) {
+				escaped = false;
+			} else if (char === '\\') {
+				escaped = true;
+			} else if (char === '"') {
+				inString = false;
+			} else if (codePoint < 0x20) {
+				result += escapeControlCharacter(char);
+				continue;
+			}
+		} else if (char === '"') {
+			inString = true;
+		}
+		result += char;
+	}
+	return result;
+}
+
+function escapeControlCharacter(char: string): string {
+	switch (char) {
+		case '\n':
+			return '\\n';
+		case '\r':
+			return '\\r';
+		case '\t':
+			return '\\t';
+		case '\b':
+			return '\\b';
+		case '\f':
+			return '\\f';
+		default:
+			return `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`;
+	}
+}

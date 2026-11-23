@@ -225,6 +225,8 @@ const zh: Translations = {
 	'error.stream.idleTimeout': '响应流超时（{0}s 无数据）。请检查网络或代理设置后重试。',
 	'error.stream.serverError': '服务返回错误：{0}',
 	'request.invalidToolArguments': '模型为工具 "{0}" 返回了无效参数，已中止本轮以避免错误调用。',
+	'request.truncatedToolArguments':
+		'模型为工具 "{0}" 生成的参数不完整（输出在参数中间被截断），已中止本轮以避免错误调用。可在设置中调大 "deepseek-copilot.maxTokens" 后重试。',
 };
 
 const en: Translations = {
@@ -471,6 +473,8 @@ const en: Translations = {
 	'error.stream.serverError': 'The server returned an error: {0}',
 	'request.invalidToolArguments':
 		'The model returned invalid arguments for tool "{0}"; aborting this turn to avoid a bad call.',
+	'request.truncatedToolArguments':
+		'The model\'s arguments for tool "{0}" were cut off mid-payload; aborting this turn to avoid a bad call. Increase "deepseek-copilot.maxTokens" and retry.',
 };
 
 /**

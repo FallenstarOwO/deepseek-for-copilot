@@ -104,7 +104,7 @@ export interface DeepSeekStreamChunk {
 export interface StreamCallbacks {
 	onContent: (content: string) => void;
 	onThinking: (text: string) => void;
-	onToolCall: (toolCall: DeepSeekToolCall) => void;
+	onToolCall: (toolCall: DeepSeekToolCall, finishReason?: string) => void;
 	onError: (error: Error) => void;
 	onDone: () => void;
 	onUsage?: (usage: DeepSeekUsage) => void;

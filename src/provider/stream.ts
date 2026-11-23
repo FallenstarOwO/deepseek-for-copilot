@@ -16,6 +16,7 @@ import {
 } from './replay';
 import type { PreparedChatRequest } from './request';
 import { formatRequestLogLine, type RequestKind } from './routing';
+import { parseToolArguments } from './tools/arguments';
 
 interface ResponseStreamState {
 	accumulatedReasoning: string;
@@ -68,10 +69,10 @@ export function streamChatCompletion({
 					handleThinking(text, state, progress);
 				},
 
-				onToolCall: (toolCall: DeepSeekToolCall) => {
+				onToolCall: (toolCall: DeepSeekToolCall, finishReason?: string) => {
 					state.reasoningRunId = undefined;
 					reportInitialResponseNoticeOnce(progress, state, initialResponseNotice);
-					handleToolCall(toolCall, state, progress);
+					handleToolCall(toolCall, finishReason, state, progress);
 				},
 
 				onError: (error: Error) => {
@@ -235,29 +236,34 @@ function handleThinking(
 
 function handleToolCall(
 	toolCall: DeepSeekToolCall,
+	finishReason: string | undefined,
 	state: ResponseStreamState,
 	progress: vscode.Progress<vscode.LanguageModelResponsePart>,
 ): void {
 	state.emittedToolCallIds.push(toolCall.id);
 
-	let args: object;
 	const rawArguments = toolCall.function.arguments;
-	if (rawArguments.trim().length === 0) {
-		// Zero-parameter tools legitimately send empty arguments.
-		args = {};
-	} else {
-		try {
-			args = JSON.parse(rawArguments);
-		} catch {
-			// Log only the payload shape, never its content: metadata debug logs are
-			// advertised as privacy-safe enough to share in public issue reports.
-			logger.warn(
-				`Invalid tool call arguments for ${toolCall.function.name} (${rawArguments.length} chars)`,
-			);
-			throw new Error(t('request.invalidToolArguments', toolCall.function.name));
-		}
+	const parsed = parseToolArguments(rawArguments);
+	if (!parsed.ok) {
+		// Log only the payload shape, never its content: metadata debug logs are
+		// advertised as privacy-safe enough to share in public issue reports.
+		logger.warn(
+			`Invalid tool call arguments for ${toolCall.function.name} (${rawArguments.length} chars, finish=${finishReason ?? 'unknown'}, reason=${parsed.reason}${parsed.offset === undefined ? '' : `, at=${parsed.offset}`})`,
+		);
+		throw new Error(
+			parsed.reason === 'truncated'
+				? t('request.truncatedToolArguments', toolCall.function.name)
+				: t('request.invalidToolArguments', toolCall.function.name),
+		);
 	}
-	progress.report(new vscode.LanguageModelToolCallPart(toolCall.id, toolCall.function.name, args));
+	if (parsed.repairedBy.length > 0) {
+		logger.debug(
+			`Repaired tool call arguments for ${toolCall.function.name} (${parsed.repairedBy.join(', ')})`,
+		);
+	}
+	progress.report(
+		new vscode.LanguageModelToolCallPart(toolCall.id, toolCall.function.name, parsed.value),
+	);
 }
 
 function finalizeReplayDiagnostics(

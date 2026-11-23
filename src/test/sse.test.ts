@@ -317,4 +317,28 @@ describe('readSseResponse', () => {
 		assert.equal(outcome.kind, 'done');
 		assert.deepEqual(events, ['content:ok']);
 	});
+
+	it('splices a frame cut by a raw newline inside a JSON string', async () => {
+		const brokenFrame =
+			'data: {"choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"id":"c1","type":"function","function":{"name":"ask_user","arguments":"{\\"message\\":\\"line one\nline two\\"}"}}]}}]}';
+		const { outcome, events } = await collect([
+			brokenFrame,
+			sseData({ choices: [{ index: 0, delta: {}, finish_reason: 'tool_calls' }] }),
+			'data: [DONE]',
+		]);
+
+		assert.equal(outcome.kind, 'done');
+		assert.deepEqual(events, ['tool:ask_user:{"message":"line one\nline two"}']);
+	});
+
+	it('drops a half-open frame when the next data frame arrives', async () => {
+		const { outcome, events } = await collect([
+			'data: {"choices":[{"index":0,"delta":{"content":"lost"',
+			sseData({ choices: [{ index: 0, delta: { content: 'ok' }, finish_reason: 'stop' }] }),
+			'data: [DONE]',
+		]);
+
+		assert.equal(outcome.kind, 'done');
+		assert.deepEqual(events, ['content:ok']);
+	});
 });

@@ -1,3 +1,4 @@
+import { escapeControlCharactersInStrings } from '../json';
 import type { DeepSeekStreamChunk, DeepSeekToolCall, DeepSeekUsage } from '../types';
 
 /**
@@ -15,7 +16,7 @@ export type StreamFinishOutcome =
 export interface SseHandlers {
 	onContent(text: string): void;
 	onThinking(text: string): void;
-	onToolCall(call: DeepSeekToolCall): void;
+	onToolCall(call: DeepSeekToolCall, finishReason: string | undefined): void;
 	onUsage(usage: DeepSeekUsage): void;
 	/** Called for every received chunk; the caller uses it to reset its idle timer. */
 	onData(): void;
@@ -48,6 +49,70 @@ export async function readSseResponse(
 
 	// Accumulate tool call deltas by index, then emit on finish_reason=stop/tool_calls
 	const pendingToolCalls = new Map<number, DeepSeekToolCall>();
+	// Head of a frame split by a raw newline inside a JSON string; spliced back
+	// together on the next physical line instead of dropping the delta.
+	let pendingPayload: string | undefined;
+
+	const processChunk = (chunk: StreamChunk): StreamFinishOutcome | undefined => {
+		// Some providers deliver protocol-level errors inside a 200 stream.
+		const serverMessage = chunk.error?.message;
+		if (typeof serverMessage === 'string' && serverMessage.length > 0) {
+			return { kind: 'server-error', detail: serverMessage };
+		}
+
+		const choice = chunk.choices?.[0];
+
+		// Some OpenAI-compatible providers emit usage on every streaming chunk.
+		// Keep only the latest value and report it once when the stream completes.
+		if (chunk.usage) {
+			latestUsage = chunk.usage;
+		}
+
+		if (!choice) {
+			return undefined;
+		}
+
+		if (choice.finish_reason !== null && choice.finish_reason !== undefined) {
+			lastFinishReason = choice.finish_reason;
+		}
+
+		// Thinking content → report with correct field name so VS Code renders collapsible blocks
+		const reasoning = choice.delta.reasoning_content;
+		if (reasoning) {
+			handlers.onThinking(reasoning);
+		}
+
+		// Regular content
+		if (choice.delta.content) {
+			handlers.onContent(choice.delta.content);
+		}
+
+		// Tool calls — accumulate deltas by index. They are flushed only
+		// once the stream is confirmed complete (see finishFromSnapshot).
+		if (choice.delta.tool_calls) {
+			for (const tc of choice.delta.tool_calls) {
+				let pending = pendingToolCalls.get(tc.index);
+				if (!pending && tc.id) {
+					pending = {
+						id: tc.id,
+						type: 'function',
+						function: { name: '', arguments: '' },
+					};
+					pendingToolCalls.set(tc.index, pending);
+				}
+				if (pending) {
+					if (tc.function?.name) {
+						pending.function.name += tc.function.name;
+					}
+					if (tc.function?.arguments) {
+						pending.function.arguments += tc.function.arguments;
+					}
+				}
+			}
+		}
+
+		return undefined;
+	};
 
 	while (true) {
 		if (handlers.isCancelled()) {
@@ -74,8 +139,24 @@ export async function readSseResponse(
 
 			// Tolerate both `data: {...}` and the equally valid `data:{...}`.
 			if (!trimmed.startsWith('data:')) {
+				if (pendingPayload === undefined) {
+					continue;
+				}
+				// Rest of a frame split by a raw newline inside a JSON string.
+				const joined = `${pendingPayload}\n${trimmed}`;
+				const joinedChunk = parseChunk(joined);
+				if (joinedChunk === undefined) {
+					pendingPayload = retainPendingPayload(joined);
+					continue;
+				}
+				pendingPayload = undefined;
+				const joinedOutcome = processChunk(joinedChunk);
+				if (joinedOutcome) {
+					return joinedOutcome;
+				}
 				continue;
 			}
+
 			const payload = trimmed.slice('data:'.length).trimStart();
 
 			if (payload === '[DONE]') {
@@ -89,72 +170,18 @@ export async function readSseResponse(
 				continue;
 			}
 
-			let chunk: StreamChunk;
-			try {
-				chunk = JSON.parse(payload);
-			} catch (e) {
-				if (e instanceof SyntaxError) {
-					// Tolerate unparsable lines instead of killing the stream.
-					continue;
-				}
-				throw e;
-			}
+			// A new frame supersedes a half-open one; the earlier head was unusable.
+			pendingPayload = undefined;
 
-			// Some providers deliver protocol-level errors inside a 200 stream.
-			const serverMessage = chunk.error?.message;
-			if (typeof serverMessage === 'string' && serverMessage.length > 0) {
-				return { kind: 'server-error', detail: serverMessage };
-			}
-
-			const choice = chunk.choices?.[0];
-
-			// Some OpenAI-compatible providers emit usage on every streaming chunk.
-			// Keep only the latest value and report it once when the stream completes.
-			if (chunk.usage) {
-				latestUsage = chunk.usage;
-			}
-
-			if (!choice) {
+			const chunk = parseChunk(payload);
+			if (chunk === undefined) {
+				pendingPayload = retainPendingPayload(payload);
 				continue;
 			}
 
-			if (choice.finish_reason !== null && choice.finish_reason !== undefined) {
-				lastFinishReason = choice.finish_reason;
-			}
-
-			// Thinking content → report with correct field name so VS Code renders collapsible blocks
-			const reasoning = choice.delta.reasoning_content;
-			if (reasoning) {
-				handlers.onThinking(reasoning);
-			}
-
-			// Regular content
-			if (choice.delta.content) {
-				handlers.onContent(choice.delta.content);
-			}
-
-			// Tool calls — accumulate deltas by index. They are flushed only
-			// once the stream is confirmed complete (see finishFromSnapshot).
-			if (choice.delta.tool_calls) {
-				for (const tc of choice.delta.tool_calls) {
-					let pending = pendingToolCalls.get(tc.index);
-					if (!pending && tc.id) {
-						pending = {
-							id: tc.id,
-							type: 'function',
-							function: { name: '', arguments: '' },
-						};
-						pendingToolCalls.set(tc.index, pending);
-					}
-					if (pending) {
-						if (tc.function?.name) {
-							pending.function.name += tc.function.name;
-						}
-						if (tc.function?.arguments) {
-							pending.function.arguments += tc.function.arguments;
-						}
-					}
-				}
+			const outcome = processChunk(chunk);
+			if (outcome) {
+				return outcome;
 			}
 
 			// No mid-stream flush on finish_reason=stop/tool_calls: the host is
@@ -172,6 +199,57 @@ export async function readSseResponse(
 	// Compatible endpoints may close right after finish_reason without [DONE];
 	// a finish_reason means the choice completed, so this is a legitimate end.
 	return finishFromSnapshot(lastFinishReason, pendingToolCalls, handlers);
+}
+
+/** Upper bound for a frame kept open across lines; larger text is treated as garbage. */
+const MAX_PENDING_PAYLOAD_CHARS = 64 * 1024;
+
+function parseChunk(payload: string): StreamChunk | undefined {
+	try {
+		return JSON.parse(payload) as StreamChunk;
+	} catch (error) {
+		if (!(error instanceof SyntaxError)) {
+			throw error;
+		}
+		// Tolerate unparsable lines instead of killing the stream. A frame that
+		// carries a raw control character inside a string is recovered by
+		// escaping it, which is lossless.
+		const repaired = escapeControlCharactersInStrings(payload);
+		if (repaired !== payload) {
+			try {
+				return JSON.parse(repaired) as StreamChunk;
+			} catch {
+				return undefined;
+			}
+		}
+		return undefined;
+	}
+}
+
+/**
+ * Keep a payload that merely lacks its closing brace/bracket so the rest of the
+ * frame can be spliced in. Anything that already looks complete is dropped.
+ */
+function retainPendingPayload(payload: string): string | undefined {
+	return payload.length <= MAX_PENDING_PAYLOAD_CHARS && looksLikeIncompleteJson(payload)
+		? payload
+		: undefined;
+}
+
+function looksLikeIncompleteJson(text: string): boolean {
+	const trimmed = text.trim();
+	if (trimmed.length === 0) {
+		return false;
+	}
+	const first = trimmed[0];
+	const last = trimmed[trimmed.length - 1];
+	if (first === '{') {
+		return last !== '}';
+	}
+	if (first === '[') {
+		return last !== ']';
+	}
+	return false;
 }
 
 /**
@@ -192,7 +270,7 @@ function finishFromSnapshot(
 		return { kind: 'fatal', finishReason };
 	}
 	for (const tc of pendingToolCalls.values()) {
-		handlers.onToolCall(tc);
+		handlers.onToolCall(tc, finishReason);
 	}
 	pendingToolCalls.clear();
 	return { kind: 'done', finishReason };
