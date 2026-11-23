@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.3...v1.1.4) (2026-11-23)
+
+
+### Bug Fixes
+
+* **provider:** tolerate malformed tool-call arguments ([d1100b0](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/d1100b01c0683adae26165ce459a1ed339b4354d))
+
 ## [1.1.3](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.2...v1.1.3) (2026-11-21)
 
 
