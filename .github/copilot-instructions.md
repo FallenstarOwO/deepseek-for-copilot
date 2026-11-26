@@ -2,7 +2,7 @@
 
 ## 身份与发布
 
-- 本仓库是 `Vizards/deepseek-v4-for-copilot` 的社区分支。当前标识：`publisher=fallenstarowo`、`name=deepseek-for-copilot-chat`、`displayName=DeepSeek for Copilot Chat (Community Fork)`，即扩展 ID `fallenstarowo.deepseek-for-copilot-chat`。
+- 本仓库是 `Vizards/deepseek-v4-for-copilot` 的社区分支。当前标识：`publisher=fallenstarowo`、`name=deepseek-for-copilot-chat`、`displayName=DeepSeek for Copilot Chat: BYOK`，即扩展 ID `fallenstarowo.deepseek-for-copilot-chat`。
 - 版本与 CHANGELOG 由 release-please 管理（[release-please-config.json](./release-please-config.json) + [release-please-manifest.json](./release-please-manifest.json)）。不要手改 CHANGELOG 的历史条目，也不要与 release 自动开的 PR 抢同一批文件。只有手动发版时才改 `package.json` 版本并打 tag。
 - 品牌与发布相关改动集中在单一提交，保持 `main = upstream/main + 若干 fork 定制提交`，方便 `git rebase upstream/main` 同步上游。上游远端需手动添加：`git remote add upstream https://github.com/Vizards/deepseek-v4-for-copilot.git`。
 

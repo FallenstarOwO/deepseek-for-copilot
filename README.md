@@ -1,4 +1,4 @@
-<h1 align="center">DeepSeek for Copilot Chat (Community Fork)</h1>
+<h1 align="center">DeepSeek for Copilot Chat: BYOK</h1>
 
 <p align="center">
   <!-- marketplace-readme:remove-start -->
@@ -14,15 +14,7 @@
   <a href="https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.en.md">English</a>
 </p>
 
-**在 Copilot Chat 模型选择器中直接使用 DeepSeek V4——保留 Agent 模式、工具调用与 Skills，无需切换界面。**
-
-> **English summary:** Pick DeepSeek V4 from the Copilot Chat model picker and keep everything Copilot already gives you. Bring your own API key, stored in the OS keychain. [Read the English README →](https://github.com/FallenstarOwO/deepseek-for-copilot/blob/main/README.en.md)
-
-> **非官方社区分支。** 由 `fallenstarowo` 从 [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot) 发布，与原作者 [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot) 无隶属或背书关系；MIT 许可证与原始版权声明均予保留。两个扩展注册同一个 `deepseek` 模型 vendor，**安装本扩展前请先卸载官方版本**。
-
-<p align="center">
-  <img src="resources/screenshots/01-picker.png" alt="Copilot Chat 模型选择器中的 DeepSeek 分组，列出 DeepSeek V4 Pro 与 DeepSeek V4.1 Flash" width="798">
-</p>
+**在 Copilot Chat 模型选择器中直接使用 DeepSeek——保留 Agent 模式、工具调用与 Skills，无需切换界面。**
 
 ## 模型
 
@@ -97,6 +89,8 @@
 
 ## 致谢与许可证
 
-本项目是 **Vizards** 的 [deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot) 社区分支：provider 实现、i18n 脚手架与大部分架构均来自上游，MIT 许可证与原始版权声明完整保留在 [LICENSE](LICENSE) 并随构建产物分发。本分支新增网页搜索/抓取、OCR、余额查询与面板，以及流式错误处理与凭据边界加固。
+本项目是 **Vizards** 的 [deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot) 社区分支，由 `fallenstarowo` 从 [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot) 发布，与原作者无隶属或背书关系。provider 实现、i18n 脚手架与大部分架构均来自上游，MIT 许可证与原始版权声明完整保留在 [LICENSE](LICENSE) 并随构建产物分发。本分支新增网页搜索/抓取、OCR、余额查询与面板，以及流式错误处理与凭据边界加固。
+
+> **安装前请先卸载原始版本。** 两个扩展注册同一个 `deepseek` 模型 vendor，同时安装会因命令 ID 重复导致本扩展激活失败。
 
 [MIT](LICENSE)

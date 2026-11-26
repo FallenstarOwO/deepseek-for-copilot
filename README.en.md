@@ -1,4 +1,4 @@
-<h1 align="center">DeepSeek for Copilot Chat (Community Fork)</h1>
+<h1 align="center">DeepSeek for Copilot Chat: BYOK</h1>
 
 <p align="center">
   <!-- marketplace-readme:remove-start -->
@@ -14,13 +14,7 @@
   English
 </p>
 
-**Pick DeepSeek V4 from the Copilot Chat model picker — and keep agent mode, tool calling, and skills exactly as they are.**
-
-> **Unofficial community fork.** Published by `fallenstarowo` from [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot). Not affiliated with or endorsed by the original author of [Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot); the MIT license and original copyright notices are retained. Both extensions register the same `deepseek` model vendor, so **uninstall the official extension before installing this one**.
-
-<p align="center">
-  <img src="resources/screenshots/01-picker.png" alt="The DeepSeek group in the Copilot Chat model picker, listing DeepSeek V4 Pro and DeepSeek V4.1 Flash" width="798">
-</p>
+**Pick DeepSeek from the Copilot Chat model picker — and keep agent mode, tool calling, and skills exactly as they are.**
 
 ## Models
 
@@ -95,6 +89,8 @@ Example `settings.json` for a compatible API proxy:
 
 ## Acknowledgements & License
 
-A community fork of **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** by **Vizards**: the provider implementation, i18n scaffolding, and most of the architecture come from upstream, with the MIT license and copyright notice preserved in [LICENSE](LICENSE) and shipped with every build. This fork adds web search/fetch tools, OCR, the balance panel and status bar, plus stream error handling and credential-boundary hardening.
+A community fork of **[Vizards/deepseek-v4-for-copilot](https://github.com/Vizards/deepseek-v4-for-copilot)** by **Vizards**, published by `fallenstarowo` from [FallenstarOwO/deepseek-for-copilot](https://github.com/FallenstarOwO/deepseek-for-copilot) and not affiliated with or endorsed by the original author. The provider implementation, i18n scaffolding, and most of the architecture come from upstream, with the MIT license and copyright notice preserved in [LICENSE](LICENSE) and shipped with every build. This fork adds web search/fetch tools, OCR, the balance panel and status bar, plus stream error handling and credential-boundary hardening.
+
+> **Uninstall the original extension first.** Both extensions register the same `deepseek` model vendor, and having both installed causes duplicate command IDs that prevent this extension from activating.
 
 [MIT](LICENSE)

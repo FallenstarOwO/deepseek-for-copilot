@@ -1,4 +1,4 @@
-# DeepSeek for Copilot Chat (Community Fork)
+# DeepSeek for Copilot Chat: BYOK
 
 简体中文说明已移至 [README.md](README.md)，本文件仅用于兼容旧的链接地址。
 
