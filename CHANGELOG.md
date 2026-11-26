@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.2.0](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.4...v1.2.0) (2026-11-26)
+
+
+### Bug Fixes
+
+* **balance:** scope in-flight requests to endpoint and generation ([2515ce9](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/2515ce9113e39035da2fd1f3693ad66a312b6815))
+* **diagnostics:** stop logging raw non-JSON response bodies ([a95b143](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/a95b143a159bdc03d3a639cededd1d815ef2430e))
+* **provider:** preserve split SSE frames and skip invalid tool calls ([337ae22](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/337ae221b1c7a2c6bc4349b52effcbba1524a521))
+
+
+### Performance Improvements
+
+* **provider:** avoid copying image bytes into data URLs ([0ad076d](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/0ad076d2dd71e0823ee3645aaa4dd97067f08608))
+
+
+### Documentation
+
+* rename the extension to DeepSeek for Copilot Chat: BYOK ([b39b5c9](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/b39b5c97cc791e2841a9f0603bd28be222487273))
+
+
+### Miscellaneous
+
+* release 1.2.0 ([8a7c7e9](https://github.com/FallenstarOwO/deepseek-for-copilot/commit/8a7c7e9ca02fec4ae862a08661945f5a32d2446e))
+
 ## [1.1.4](https://github.com/FallenstarOwO/deepseek-for-copilot/compare/v1.1.3...v1.1.4) (2026-11-23)
 
 
