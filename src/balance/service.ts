@@ -35,6 +35,9 @@ interface CacheEntry {
 class BalanceServiceImpl {
 	private cache: CacheEntry | undefined;
 	private inFlight: Promise<BalanceSnapshot> | undefined;
+	/** Generation and endpoint the in-flight request belongs to. */
+	private inFlightGeneration = -1;
+	private inFlightBaseUrl: string | undefined;
 	private authManager: AuthManager | undefined;
 	private generation = 0;
 	private readonly changeListeners = new Set<(event: BalanceServiceEvent) => void>();
@@ -97,9 +100,23 @@ class BalanceServiceImpl {
 		) {
 			return this.cache.snapshot;
 		}
-		this.inFlight ??= this.fetchSnapshot(baseUrl, generationAtStart).finally(() => {
-			this.inFlight = undefined;
-		});
+		// Reuse only a request started for the same endpoint and configuration
+		// generation; otherwise a query made right after an endpoint/credential
+		// change would await (and return) the superseded request's snapshot.
+		if (
+			this.inFlight === undefined ||
+			this.inFlightGeneration !== generationAtStart ||
+			this.inFlightBaseUrl !== baseUrl
+		) {
+			const promise = this.fetchSnapshot(baseUrl, generationAtStart).finally(() => {
+				if (this.inFlight === promise) {
+					this.inFlight = undefined;
+				}
+			});
+			this.inFlight = promise;
+			this.inFlightGeneration = generationAtStart;
+			this.inFlightBaseUrl = baseUrl;
+		}
 		const snapshot = await this.inFlight;
 		if (generationAtStart !== this.generation) {
 			// The result belongs to a superseded endpoint or credential; refetch.
