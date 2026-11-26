@@ -84,9 +84,6 @@ export async function createHttpError(
 			getRequestDiagnosticMessage(context),
 			`statusText=${safeStringify(response.statusText || 'unknown')}`,
 			serverMessage ? `serverMessage=${safeStringify(serverMessage)}` : undefined,
-			responseText && responseText !== serverMessage
-				? `body=${safeStringify(truncateSingleLine(responseText))}`
-				: undefined,
 		),
 	});
 }
@@ -207,7 +204,10 @@ function extractServerMessage(responseText: string): string | undefined {
 			(typeof error === 'string' ? error : undefined);
 		return message ? truncateSingleLine(message) : undefined;
 	} catch {
-		return truncateSingleLine(trimmed);
+		// Do not echo arbitrary non-JSON bodies (proxy HTML, plain-text dumps):
+		// they can contain request content, while the status code and statusText
+		// already identify the failure.
+		return undefined;
 	}
 }
 
