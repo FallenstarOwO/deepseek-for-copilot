@@ -146,7 +146,9 @@ export function convertMessages(
 }
 
 function toImageDataUrl(part: { mimeType: string; data: Uint8Array }): string {
-	return `data:${part.mimeType};base64,${Buffer.from(part.data).toString('base64')}`;
+	// View the existing bytes instead of copying them into a new Buffer.
+	const bytes = Buffer.from(part.data.buffer, part.data.byteOffset, part.data.byteLength);
+	return `data:${part.mimeType};base64,${bytes.toString('base64')}`;
 }
 
 function convertToolResultContent(
