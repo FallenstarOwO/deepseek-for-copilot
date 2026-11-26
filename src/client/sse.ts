@@ -130,20 +130,22 @@ export async function readSseResponse(
 		const lines = buffer.split('\n');
 		buffer = lines.pop() || '';
 
-		for (const line of lines) {
+		for (const physicalLine of lines) {
+			// Keep the physical line intact for splicing: a raw newline inside a
+			// JSON string is payload content, so indentation and empty lines must
+			// survive. Only the SSE CR is dropped.
+			const line = physicalLine.endsWith('\r') ? physicalLine.slice(0, -1) : physicalLine;
 			const trimmed = line.trim();
-
-			if (!trimmed || trimmed.startsWith(':')) {
-				continue;
-			}
 
 			// Tolerate both `data: {...}` and the equally valid `data:{...}`.
 			if (!trimmed.startsWith('data:')) {
 				if (pendingPayload === undefined) {
+					// Blank lines delimit events; `:` lines are keep-alive comments.
 					continue;
 				}
 				// Rest of a frame split by a raw newline inside a JSON string.
-				const joined = `${pendingPayload}\n${trimmed}`;
+				// Join the untrimmed line so blank lines and indentation survive.
+				const joined = `${pendingPayload}\n${line}`;
 				const joinedChunk = parseChunk(joined);
 				if (joinedChunk === undefined) {
 					pendingPayload = retainPendingPayload(joined);
@@ -157,16 +159,19 @@ export async function readSseResponse(
 				continue;
 			}
 
-			const payload = trimmed.slice('data:'.length).trimStart();
+			// Do not trim the tail: trailing spaces on a head line can be payload
+			// characters when the string continues on the next physical line.
+			const payload = line.trimStart().slice('data:'.length);
+			const trimmedPayload = payload.trim();
 
-			if (payload === '[DONE]') {
+			if (trimmedPayload === '[DONE]') {
 				if (latestUsage) {
 					handlers.onUsage(latestUsage);
 				}
 				return finishFromSnapshot(lastFinishReason, pendingToolCalls, handlers);
 			}
 
-			if (!payload) {
+			if (!trimmedPayload) {
 				continue;
 			}
 
@@ -227,29 +232,23 @@ function parseChunk(payload: string): StreamChunk | undefined {
 }
 
 /**
- * Keep a payload that merely lacks its closing brace/bracket so the rest of the
- * frame can be spliced in. Anything that already looks complete is dropped.
+ * Keep a JSON-looking payload that failed to parse so a following physical line
+ * can be spliced in. Parseability, not the trailing character, decides whether
+ * the frame is complete: a raw newline inside a string may split the frame right
+ * after a `}`.
  */
 function retainPendingPayload(payload: string): string | undefined {
-	return payload.length <= MAX_PENDING_PAYLOAD_CHARS && looksLikeIncompleteJson(payload)
-		? payload
-		: undefined;
-}
-
-function looksLikeIncompleteJson(text: string): boolean {
-	const trimmed = text.trim();
-	if (trimmed.length === 0) {
-		return false;
+	const trimmed = payload.trim();
+	if (trimmed.length === 0 || trimmed.length > MAX_PENDING_PAYLOAD_CHARS) {
+		return undefined;
 	}
+	// A frame split by a raw newline inside a string can end with any character,
+	// including `}` or `]` — tool arguments often embed JSON whose closing braces
+	// land right at the split. Judge only by the opening delimiter; the next
+	// physical line is spliced in and the raw control character is escaped again
+	// by parseChunk().
 	const first = trimmed[0];
-	const last = trimmed[trimmed.length - 1];
-	if (first === '{') {
-		return last !== '}';
-	}
-	if (first === '[') {
-		return last !== ']';
-	}
-	return false;
+	return first === '{' || first === '[' ? payload : undefined;
 }
 
 /**

@@ -240,8 +240,6 @@ function handleToolCall(
 	state: ResponseStreamState,
 	progress: vscode.Progress<vscode.LanguageModelResponsePart>,
 ): void {
-	state.emittedToolCallIds.push(toolCall.id);
-
 	const rawArguments = toolCall.function.arguments;
 	const parsed = parseToolArguments(rawArguments);
 	if (!parsed.ok) {
@@ -250,17 +248,22 @@ function handleToolCall(
 		logger.warn(
 			`Invalid tool call arguments for ${toolCall.function.name} (${rawArguments.length} chars, finish=${finishReason ?? 'unknown'}, reason=${parsed.reason}${parsed.offset === undefined ? '' : `, at=${parsed.offset}`})`,
 		);
-		throw new Error(
+		// Skip the unusable call instead of failing the whole turn: the visible
+		// answer stays usable, and the host does not show a generic
+		// "response interrupted" error that hides the real reason.
+		const message =
 			parsed.reason === 'truncated'
 				? t('request.truncatedToolArguments', toolCall.function.name)
-				: t('request.invalidToolArguments', toolCall.function.name),
-		);
+				: t('request.invalidToolArguments', toolCall.function.name);
+		progress.report(new vscode.LanguageModelTextPart(`\n\n⚠️ ${message}`));
+		return;
 	}
 	if (parsed.repairedBy.length > 0) {
 		logger.debug(
 			`Repaired tool call arguments for ${toolCall.function.name} (${parsed.repairedBy.join(', ')})`,
 		);
 	}
+	state.emittedToolCallIds.push(toolCall.id);
 	progress.report(
 		new vscode.LanguageModelToolCallPart(toolCall.id, toolCall.function.name, parsed.value),
 	);

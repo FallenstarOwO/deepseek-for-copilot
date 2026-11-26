@@ -64,4 +64,10 @@ describe('parseToolArguments', () => {
 		assert.equal(result.ok, false);
 		assert.equal(!result.ok && result.reason, 'syntax');
 	});
+
+	it('rejects top-level arrays', () => {
+		const result = parseToolArguments('[1,2]');
+		assert.equal(result.ok, false);
+		assert.equal(!result.ok && result.reason, 'syntax');
+	});
 });

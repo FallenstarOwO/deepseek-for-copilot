@@ -331,6 +331,105 @@ describe('readSseResponse', () => {
 		assert.deepEqual(events, ['tool:ask_user:{"message":"line one\nline two"}']);
 	});
 
+	it('splices a frame split by a raw newline right after a closing brace inside a string', async () => {
+		const args = '{"message":"hi","requestedSchema":{"type":"object"}}';
+		const frame = JSON.stringify({
+			choices: [
+				{
+					index: 0,
+					delta: {
+						tool_calls: [
+							{
+								index: 0,
+								id: 'c1',
+								type: 'function',
+								function: { name: 'ask_user', arguments: args },
+							},
+						],
+					},
+					finish_reason: null,
+				},
+			],
+		});
+		// Split inside the escaped arguments string, right after its final `}`,
+		// so the head ends with a brace and looks "complete" to a naive check.
+		const marker = '\\"object\\"}}"';
+		const markerIndex = frame.indexOf(marker);
+		assert.notEqual(markerIndex, -1, 'split marker must be present');
+		const splitAt = markerIndex + '\\"object\\"}}'.length;
+		const brokenFrame = `data: ${frame.slice(0, splitAt)}\n${frame.slice(splitAt)}`;
+		const { outcome, events } = await collect([
+			brokenFrame,
+			sseData({ choices: [{ index: 0, delta: {}, finish_reason: 'tool_calls' }] }),
+			'data: [DONE]',
+		]);
+
+		assert.equal(outcome.kind, 'done');
+		assert.deepEqual(events, [`tool:ask_user:${args}\n`]);
+	});
+
+	it('preserves blank lines and indentation when splicing a split frame', async () => {
+		const args = '{"text":"line one\n\n  line two"}';
+		const frame = JSON.stringify({
+			choices: [
+				{
+					index: 0,
+					delta: {
+						tool_calls: [
+							{
+								index: 0,
+								id: 'c2',
+								type: 'function',
+								function: { name: 'echo', arguments: args },
+							},
+						],
+					},
+					finish_reason: null,
+				},
+			],
+		});
+		const brokenFrame = `data: ${frame.replace(/\\n/g, '\n')}`;
+		const { outcome, events } = await collect([
+			brokenFrame,
+			sseData({ choices: [{ index: 0, delta: {}, finish_reason: 'tool_calls' }] }),
+			'data: [DONE]',
+		]);
+
+		assert.equal(outcome.kind, 'done');
+		assert.deepEqual(events, [`tool:echo:${args}`]);
+	});
+
+	it('splices a frame split right after a closing bracket inside a string', async () => {
+		const args = '{"items":[1,2]\n}';
+		const frame = JSON.stringify({
+			choices: [
+				{
+					index: 0,
+					delta: {
+						tool_calls: [
+							{
+								index: 0,
+								id: 'c3',
+								type: 'function',
+								function: { name: 'echo', arguments: args },
+							},
+						],
+					},
+					finish_reason: null,
+				},
+			],
+		});
+		const brokenFrame = `data: ${frame.replace(/\\n/g, '\n')}`;
+		const { outcome, events } = await collect([
+			brokenFrame,
+			sseData({ choices: [{ index: 0, delta: {}, finish_reason: 'tool_calls' }] }),
+			'data: [DONE]',
+		]);
+
+		assert.equal(outcome.kind, 'done');
+		assert.deepEqual(events, [`tool:echo:${args}`]);
+	});
+
 	it('drops a half-open frame when the next data frame arrives', async () => {
 		const { outcome, events } = await collect([
 			'data: {"choices":[{"index":0,"delta":{"content":"lost"',

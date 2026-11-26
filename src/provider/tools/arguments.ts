@@ -77,11 +77,11 @@ export function parseToolArguments(rawArguments: string): ToolArgumentsParseResu
 }
 
 function toResult(value: unknown, repairedBy: ToolArgumentsRepair[]): ToolArgumentsParseResult {
-	if (typeof value !== 'object' || value === null) {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) {
 		return {
 			ok: false,
 			reason: 'syntax',
-			detail: `expected a JSON object, got ${value === null ? 'null' : typeof value}`,
+			detail: `expected a JSON object, got ${Array.isArray(value) ? 'array' : value === null ? 'null' : typeof value}`,
 		};
 	}
 	return { ok: true, value: value as Record<string, unknown>, repairedBy };
